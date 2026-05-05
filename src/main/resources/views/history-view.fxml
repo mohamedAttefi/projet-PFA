@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.company.workorders.controller.HistoryController"
+      spacing="24" style="-fx-background-color: #f7f4f2;">
+    <padding><Insets top="32" right="32" bottom="32" left="32"/></padding>
+
+    <!-- PAGE HEADER -->
+    <VBox spacing="8">
+        <Label text="Historique des Actions" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #410007;"/>
+        <Label text="Consultez l'audit trail complet de tous les événements du système" style="-fx-font-size: 13; -fx-text-fill: #666666;"/>
+    </VBox>
+
+    <!-- FILTERS -->
+    <HBox spacing="12" style="-fx-background-color: white; -fx-border-color: #e8e8e8; -fx-border-radius: 6; -fx-padding: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);">
+        <Label text="Filtrer par:" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+        <ComboBox promptText="Type d'action" style="-fx-padding: 6 12; -fx-font-size: 11; -fx-border-color: #e8e8e8; -fx-border-width: 1;"/>
+        <ComboBox promptText="Utilisateur" style="-fx-padding: 6 12; -fx-font-size: 11; -fx-border-color: #e8e8e8; -fx-border-width: 1;"/>
+        <DatePicker style="-fx-padding: 6 12; -fx-font-size: 11;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Réinitialiser filtres" style="-fx-padding: 6 16; -fx-font-size: 11; -fx-background-color: white; -fx-border-color: #e8e8e8; -fx-text-fill: #2d2d2d;"/>
+    </HBox>
+
+    <!-- HISTORY TABLE -->
+    <VBox spacing="12" style="-fx-background-color: white; -fx-border-color: #e8e8e8; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);">
+        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+        <VBox spacing="4">
+            <Label text="AUDIT TRAIL" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+            <Label text="Enregistrement complet de tous les événements du système" style="-fx-font-size: 11; -fx-text-fill: #999999;"/>
+        </VBox>
+        <TableView fx:id="historyTable" prefHeight="520" style="-fx-font-size: 11px;">
+            <columns>
+                <TableColumn fx:id="dateColumn" text="Date/Heure" prefWidth="180"/>
+                <TableColumn fx:id="actionColumn" text="Action" prefWidth="160"/>
+                <TableColumn fx:id="userColumn" text="Utilisateur" prefWidth="180"/>
+                <TableColumn fx:id="detailColumn" text="Détail" prefWidth="400"/>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>

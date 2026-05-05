@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.company.workorders.controller.NotificationsController"
+      spacing="24" style="-fx-background-color: #f7f4f2;">
+    <padding><Insets top="32" right="32" bottom="32" left="32"/></padding>
+
+    <!-- PAGE HEADER -->
+    <VBox spacing="8">
+        <Label text="Notifications" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #410007;"/>
+        <Label text="Consultez toutes les notifications système et les mises à jour des interventions" style="-fx-font-size: 13; -fx-text-fill: #666666;"/>
+    </VBox>
+
+    <!-- NOTIFICATION FILTERS -->
+    <HBox spacing="12" style="-fx-background-color: white; -fx-border-color: #e8e8e8; -fx-border-radius: 6; -fx-padding: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);">
+        <Button text="✓ Tous" style="-fx-padding: 8 16; -fx-font-size: 11; -fx-background-color: #c8102e; -fx-text-fill: white; -fx-cursor: hand;"/>
+        <Button text="🔔 Non lus" style="-fx-padding: 8 16; -fx-font-size: 11; -fx-background-color: white; -fx-border-color: #e8e8e8; -fx-text-fill: #2d2d2d; -fx-cursor: hand;"/>
+        <Button text="⚠️ Urgents" style="-fx-padding: 8 16; -fx-font-size: 11; -fx-background-color: white; -fx-border-color: #e8e8e8; -fx-text-fill: #2d2d2d; -fx-cursor: hand;"/>
+        <Button text="📋 Interventions" style="-fx-padding: 8 16; -fx-font-size: 11; -fx-background-color: white; -fx-border-color: #e8e8e8; -fx-text-fill: #2d2d2d; -fx-cursor: hand;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Marquer tout comme lu" style="-fx-padding: 8 16; -fx-font-size: 11; -fx-background-color: white; -fx-border-color: #e8e8e8; -fx-text-fill: #2d2d2d; -fx-cursor: hand;"/>
+    </HBox>
+
+    <!-- NOTIFICATIONS LIST -->
+    <VBox spacing="12" style="-fx-background-color: white; -fx-border-color: #e8e8e8; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);">
+        <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+        <ListView fx:id="notificationList" prefHeight="600" style="-fx-padding: 8;"/>
+    </VBox>
+</VBox>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.company.workorders.controller.InterventionsController"
+            style="-fx-background-color: #f7f4f2;">
+    <top>
+        <VBox spacing="8" style="-fx-background-color: white; -fx-border-color: #edd7d4; -fx-border-width: 0 0 1 0;">
+            <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
+            <Label text="Gestion des interventions" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #410007;"/>
+            <Label text="Créer une intervention, l’assigner et suivre son cycle de vie." style="-fx-text-fill: #6f5651;"/>
+        </VBox>
+    </top>
+    <center>
+        <SplitPane dividerPositions="0.38">
+            <VBox spacing="12" style="-fx-background-color: white;">
+                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                <Label text="Nouvelle intervention" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+                <TextField fx:id="titleField" promptText="Titre"/>
+                <TextArea fx:id="descriptionField" promptText="Description" prefRowCount="4" wrapText="true"/>
+                <TextField fx:id="locationField" promptText="Localisation"/>
+                <ComboBox fx:id="priorityBox" promptText="Priorité"/>
+                <ComboBox fx:id="statusBox" promptText="Statut"/>
+                <ComboBox fx:id="clientBox" promptText="Client"/>
+                <ComboBox fx:id="assigneeBox" promptText="Technicien"/>
+                <HBox spacing="10">
+                    <Button fx:id="saveButton" text="Enregistrer" onAction="#handleSaveIntervention"/>
+                    <Button fx:id="deleteButton" text="Supprimer" onAction="#handleDeleteIntervention"/>
+                    <Button fx:id="resetButton" text="Réinitialiser" onAction="#handleResetForm"/>
+                </HBox>
+            </VBox>
+            <VBox spacing="12" style="-fx-background-color: white;">
+                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Recherche"/>
+                    <TextField fx:id="searchField" promptText="Rechercher une intervention" onAction="#handleSearch"/>
+                    <Button text="Rechercher" onAction="#handleSearch"/>
+                </HBox>
+                <TableView fx:id="interventionTable" prefHeight="500">
+                    <columns>
+                        <TableColumn fx:id="titleColumn" text="Titre" prefWidth="170"/>
+                        <TableColumn fx:id="priorityColumn" text="Priorité" prefWidth="100"/>
+                        <TableColumn fx:id="statusColumn" text="Statut" prefWidth="100"/>
+                        <TableColumn fx:id="clientColumn" text="Client" prefWidth="180"/>
+                        <TableColumn fx:id="assignedColumn" text="Technicien" prefWidth="160"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </SplitPane>
+    </center>
+</BorderPane>

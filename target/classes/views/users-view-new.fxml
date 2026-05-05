@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            style="-fx-background-color: #f7f4f2; -fx-fit-to-width: true;">
+    <VBox spacing="24" style="-fx-background-color: #f7f4f2;">
+        <padding>
+            <Insets top="32" right="32" bottom="32" left="32"/>
+        </padding>
+
+        <!-- PAGE HEADER -->
+        <VBox spacing="8">
+            <Label text="Gestion des Utilisateurs" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #410007;"/>
+            <Label text="Administrez les comptes utilisateurs et les permissions" style="-fx-font-size: 13; -fx-text-fill: #666666;"/>
+        </VBox>
+
+        <!-- FORM SECTION -->
+        <VBox spacing="16" style="-fx-background-color: white; -fx-border-color: #e8e8e8; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);">
+            <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+            <VBox spacing="4">
+                <Label text="NOUVEL UTILISATEUR" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                <Separator/>
+            </VBox>
+
+            <HBox spacing="20">
+                <VBox spacing="14" HBox.hgrow="ALWAYS">
+                    <VBox spacing="6">
+                        <Label text="Nom Complet" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                        <TextField promptText="Ex: Jean Dupont"
+                                   style="-fx-padding: 10px; -fx-font-size: 12px; -fx-border-color: #e8e8e8; -fx-border-width: 1; -fx-border-radius: 4; -fx-background-radius: 4;"/>
+                    </VBox>
+                    <VBox spacing="6">
+                        <Label text="Email Professionnel" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                        <TextField promptText="Ex: jean.dupont@canal-info.fr"
+                                   style="-fx-padding: 10px; -fx-font-size: 12px; -fx-border-color: #e8e8e8; -fx-border-width: 1; -fx-border-radius: 4; -fx-background-radius: 4;"/>
+                    </VBox>
+                </VBox>
+
+                <VBox spacing="14" prefWidth="280">
+                    <VBox spacing="6">
+                        <Label text="Rôle" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                        <ComboBox promptText="Sélectionner..." prefWidth="Infinity"
+                                  style="-fx-padding: 10px; -fx-font-size: 12px; -fx-border-color: #e8e8e8; -fx-border-width: 1; -fx-border-radius: 4; -fx-background-radius: 4;"/>
+                    </VBox>
+                    <VBox spacing="6">
+                        <Label text="Mot de Passe" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                        <PasswordField promptText="••••••••"
+                                       style="-fx-padding: 10px; -fx-font-size: 12px; -fx-border-color: #e8e8e8; -fx-border-width: 1; -fx-border-radius: 4; -fx-background-radius: 4;"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button text="Réinitialiser"
+                        style="-fx-padding: 10 24; -fx-font-size: 12; -fx-background-color: white; -fx-border-color: #e8e8e8; -fx-border-width: 1; -fx-text-fill: #2d2d2d; -fx-cursor: hand;"/>
+                <Button text="Créer Utilisateur"
+                        style="-fx-padding: 10 24; -fx-font-size: 12; -fx-background-color: #c8102e; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+            </HBox>
+        </VBox>
+
+        <!-- LIST SECTION -->
+        <VBox spacing="16" style="-fx-background-color: white; -fx-border-color: #e8e8e8; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);">
+            <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+            <VBox spacing="4">
+                <Label text="UTILISATEURS ACTIFS" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                <Label text="Gérez les comptes utilisateurs et leurs permissions" style="-fx-font-size: 11; -fx-text-fill: #999999;"/>
+            </VBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 12; -fx-background-color: #f7f4f2; -fx-border-radius: 4;">
+                <Label text="🔍" style="-fx-font-size: 14;"/>
+                <TextField promptText="Rechercher par nom ou email..." HBox.hgrow="ALWAYS"
+                           style="-fx-padding: 8 12; -fx-font-size: 12px; -fx-border-width: 0; -fx-background-color: transparent;"/>
+            </HBox>
+
+            <TableView prefHeight="400" style="-fx-font-size: 12px;">
+                <columns>
+                    <TableColumn text="Nom" prefWidth="220"/>
+                    <TableColumn text="Email" prefWidth="240"/>
+                    <TableColumn text="Rôle" prefWidth="140"/>
+                    <TableColumn text="Actions" prefWidth="140"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </VBox>
+</ScrollPane>

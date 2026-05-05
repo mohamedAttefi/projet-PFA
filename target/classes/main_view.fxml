@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.company.workorders.util.LoginController"
+            prefWidth="1200.0" prefHeight="800.0"
+            style="-fx-background-color: linear-gradient(135deg, #9e001f 0%, #c8102e 100%);">
+
+    <!-- LEFT SIDE - BRANDING & INFO -->
+    <left>
+        <VBox spacing="22" alignment="TOP_CENTER"
+              style="-fx-background-color: rgba(0,0,0,0.1); -fx-padding: 80px 40px;">
+            <StackPane prefWidth="260" prefHeight="260">
+                <Rectangle width="260" height="260" arcWidth="72" arcHeight="72" fill="#c8102e"/>
+                <Label text="CI"
+                       style="-fx-text-fill: white; -fx-font-size: 132px; -fx-font-weight: bold; -fx-font-family: Georgia;"/>
+            </StackPane>
+            <VBox spacing="2" alignment="CENTER">
+                <Label text="CANAL"
+                       style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #ff2b4d;"/>
+                <Label text="INFORMATIQUE"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: rgba(255,255,255,0.72);"/>
+            </VBox>
+            <Label text="Système de Gestion des Interventions" 
+                   style="-fx-font-size: 18px; -fx-text-fill: rgba(255,255,255,0.9);"/>
+            <Separator style="-fx-stroke: rgba(255,255,255,0.3); -fx-padding: 20px 0;"/>
+            <VBox spacing="15" style="-fx-text-fill: rgba(255,255,255,0.8);">
+                <Label text="✓ Gestion centralisée des interventions"
+                       style="-fx-font-size: 14px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+                <Label text="✓ Assignation intelligente des techniciens"
+                       style="-fx-font-size: 14px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+                <Label text="✓ Suivi en temps réel"
+                       style="-fx-font-size: 14px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+                <Label text="✓ Rapports et analytics"
+                       style="-fx-font-size: 14px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- RIGHT SIDE - LOGIN FORM -->
+    <center>
+        <VBox spacing="0" alignment="CENTER" prefWidth="500"
+              style="-fx-background-color: white;">
+            <VBox spacing="40" alignment="TOP_CENTER" style="-fx-padding: 60px 50px;">
+
+                <!-- TITLE -->
+                <VBox spacing="10" alignment="CENTER">
+                    <Label text="Connexion Sécurisée" 
+                           style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                    <Label text="Connectez-vous à votre compte Canal Informatique" 
+                           style="-fx-font-size: 13px; -fx-text-fill: #666666;"/>
+                </VBox>
+
+                <!-- FORM -->
+                <VBox spacing="16">
+                    <!-- EMAIL FIELD -->
+                    <VBox spacing="6">
+                        <Label text="Adresse Email" 
+                               style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                        <TextField fx:id="emailField" promptText="votre.email@canal-info.fr"
+                                   style="-fx-padding: 12px; -fx-font-size: 13px; -fx-border-color: #e8e8e8; -fx-border-width: 1; -fx-border-radius: 4; -fx-background-radius: 4; -fx-background-color: #ffffff;"/>
+                    </VBox>
+
+                    <!-- PASSWORD FIELD -->
+                    <VBox spacing="6">
+                        <Label text="Mot de Passe" 
+                               style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                        <PasswordField fx:id="passwordField" promptText="••••••••••••"
+                                       style="-fx-padding: 12px; -fx-font-size: 13px; -fx-border-color: #e8e8e8; -fx-border-width: 1; -fx-border-radius: 4; -fx-background-radius: 4; -fx-background-color: #ffffff;"/>
+                    </VBox>
+
+                    <!-- REMEMBER ME -->
+                    <HBox spacing="8">
+                        <CheckBox fx:id="rememberMeCheckBox" text="Se souvenir de moi"
+                                  style="-fx-font-size: 12px; -fx-text-fill: #666666;"/>
+                    </HBox>
+                </VBox>
+
+                <!-- LOGIN BUTTON -->
+                <Button text="Se Connecter" onAction="#handleLogin"
+                        style="-fx-padding: 14px; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #c8102e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 4; -fx-border-radius: 4;" prefWidth="Infinity"/>
+
+                <!-- TEST CREDENTIALS INFO -->
+                <VBox spacing="12" style="-fx-background-color: #f5e6e8; -fx-padding: 15px; -fx-border-radius: 4;">
+                    <Label text="Identifiants de Test" 
+                           style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #9e001f;"/>
+                    <Label text="Admin: admin@canal-info.fr / admin123" 
+                           style="-fx-font-size: 11px; -fx-text-fill: #666666;"/>
+                    <Label text="Tech: technician@canal-info.fr / tech123" 
+                           style="-fx-font-size: 11px; -fx-text-fill: #666666;"/>
+                    <Label text="Recep: receptionist@canal-info.fr / recept123" 
+                           style="-fx-font-size: 11px; -fx-text-fill: #666666;"/>
+                </VBox>
+
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>
