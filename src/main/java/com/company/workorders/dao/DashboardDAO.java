@@ -1,5 +1,6 @@
 package com.company.workorders.dao;
 
+import com.company.workorders.model.Intervention;
 import com.company.workorders.util.DBConnection;
 
 import java.sql.Connection;
@@ -75,6 +76,46 @@ public class DashboardDAO {
             System.err.println("[DashboardDAO] Top technician error: " + e.getMessage());
         }
         return "";
+    }
+
+    public static List<Intervention> getRecentInterventions(int limit) {
+        List<Intervention> interventions = new ArrayList<>();
+        String query = "SELECT i.id, i.title, i.description, i.priority, i.status, " +
+                "i.location, i.client_id, i.assigned_to, " +
+                "COALESCE(c.company_name, 'Client inconnu') as client_name, " +
+                "COALESCE(u.name, 'Non assigné') as technician_name, " +
+                "i.created_at " +
+                "FROM interventions i " +
+                "LEFT JOIN clients c ON i.client_id = c.id " +
+                "LEFT JOIN users u ON i.assigned_to = u.id " +
+                "ORDER BY i.created_at DESC LIMIT ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, limit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Intervention intervention = new Intervention(
+                        rs.getLong("id"),
+                        rs.getString("title"),
+                        rs.getString("description"),
+                        rs.getString("priority"),
+                        rs.getString("status"),
+                        rs.getString("location"),
+                        rs.getLong("client_id"),
+                        rs.getLong("assigned_to"),
+                        rs.getString("client_name"),
+                        rs.getString("technician_name"),
+                        rs.getString("created_at")
+                    );
+                    interventions.add(intervention);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[DashboardDAO] Error loading recent interventions: " + e.getMessage());
+        }
+
+        return interventions;
     }
 
     private static long singleCount(String sql) {
