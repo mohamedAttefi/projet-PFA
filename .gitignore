@@ -1,0 +1,36 @@
+# Compiled class files
+target/
+target/classes/
+target/test-classes/
+
+# Build artifacts
+*.jar
+*.war
+*.ear
+*.class
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+
+# Logs
+*.log
+logs/
+
+# Maven
+.mvn/
+dependency-reduced-pom.xml
+
+# Database
+*.db
+*.sqlite
+*.h2.db
