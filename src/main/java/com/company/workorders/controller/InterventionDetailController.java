@@ -2,13 +2,18 @@ package com.company.workorders.controller;
 
 import com.company.workorders.model.Intervention;
 import com.company.workorders.model.User;
+import com.company.workorders.model.InterventionComment;
 import com.company.workorders.dao.InterventionDAO;
 import com.company.workorders.dao.UserDAO;
 import com.company.workorders.dao.ClientDAO;
+import com.company.workorders.dao.InterventionCommentDAO;
 import com.company.workorders.util.AppNavigator;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
+import javafx.geometry.Insets;
 
 import java.awt.Desktop;
 import java.net.URI;
@@ -41,6 +46,18 @@ public class InterventionDetailController {
     @FXML
     private VBox historyContainer;
     @FXML
+    private Label commentCountLabel;
+    @FXML
+    private ScrollPane commentsScrollPane;
+    @FXML
+    private VBox commentsContainer;
+    @FXML
+    private Label noCommentsLabel;
+    @FXML
+    private TextArea newCommentArea;
+    @FXML
+    private ComboBox<String> commentTypeComboBox;
+    @FXML
     private Button closeBtn;
 
     private Intervention intervention;
@@ -51,7 +68,13 @@ public class InterventionDetailController {
      */
     public void initialize(long interventionId) {
         this.interventionId = interventionId;
+        
+        // Create comments table if it doesn't exist
+        InterventionCommentDAO.createTableIfNotExists();
+        
+        initializeCommentSection();
         loadInterventionDetails();
+        loadComments();
     }
 
     /**
@@ -68,7 +91,7 @@ public class InterventionDetailController {
         // Set header information
         interventionRefLabel.setText("INT-" + String.format("%07d", intervention.getId()));
         interventionTitleLabel.setText(intervention.getTitle());
-        interventionDateLabel.setText("créé"+intervention.getCreatedAt());
+        interventionDateLabel.setText("Créé " + intervention.getFormattedCreatedAt());
 
 
         // Set client information
@@ -231,8 +254,32 @@ public class InterventionDetailController {
      */
     @FXML
     private void handleModifyStatus() {
-        System.out.println("[InterventionDetail] Modify status clicked");
-        showInfo("Fonction à implémenter");
+        ChoiceDialog<String> dialog = new ChoiceDialog<>();
+        dialog.setTitle("Modifier le statut");
+        dialog.setHeaderText("Changer le statut de l'intervention");
+        dialog.setContentText("Nouveau statut:");
+
+        java.util.List<String> statuses = java.util.Arrays.asList(
+            "Nouvelle", "Assignée", "En cours", "Terminée", "Fermée", "Annulée"
+        );
+        dialog.getItems().setAll(statuses);
+        dialog.setSelectedItem(intervention.getStatus());
+
+        dialog.showAndWait().ifPresent(newStatus -> {
+            try {
+                boolean success = InterventionDAO.updateInterventionStatus(intervention.getId(), newStatus);
+                if (success) {
+                    showInfo("Statut modifié avec succès en: " + newStatus);
+                    intervention.setStatus(newStatus);
+                    updateCloseButtonState();
+                    loadChangeHistory();
+                } else {
+                    showError("Impossible de modifier le statut");
+                }
+            } catch (Exception e) {
+                showError("Erreur lors de la modification: " + e.getMessage());
+            }
+        });
     }
 
     /**
@@ -240,8 +287,58 @@ public class InterventionDetailController {
      */
     @FXML
     private void handleReassign() {
-        System.out.println("[InterventionDetail] Reassign clicked");
-        showInfo("Fonction à implémenter");
+        try {
+            java.util.List<Object[]> technicians = InterventionDAO.getAllTechnicians();
+            ChoiceDialog<String> dialog = new ChoiceDialog<>();
+            dialog.setTitle("Réassigner l'intervention");
+            dialog.setHeaderText("Assigner à un nouveau technicien");
+            dialog.setContentText("Technicien:");
+
+            java.util.List<String> techNames = new java.util.ArrayList<>();
+            techNames.add("Non assigné");
+            for (Object[] tech : technicians) {
+                techNames.add((String) tech[1]);
+            }
+
+            dialog.getItems().setAll(techNames);
+            dialog.setSelectedItem(technicianNameLabel.getText());
+
+            dialog.showAndWait().ifPresent(selectedTech -> {
+                try {
+                    Long technicianId = null;
+                    if (!"Non assigné".equals(selectedTech)) {
+                        for (Object[] tech : technicians) {
+                            if (selectedTech.equals(tech[1])) {
+                                technicianId = (Long) tech[0];
+                                break;
+                            }
+                        }
+                    }
+
+                    boolean success = InterventionDAO.updateIntervention(
+                        intervention.getId(),
+                        intervention.getTitle(),
+                        intervention.getDescription(),
+                        intervention.getPriority(),
+                        intervention.getStatus(),
+                        intervention.getLocation(),
+                        technicianId != null ? technicianId : 0
+                    );
+
+                    if (success) {
+                        showInfo("Intervention réassignée à: " + selectedTech);
+                        technicianNameLabel.setText(selectedTech);
+                        loadChangeHistory();
+                    } else {
+                        showError("Impossible de réassigner l'intervention");
+                    }
+                } catch (Exception e) {
+                    showError("Erreur lors de la réassignation: " + e.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            showError("Erreur lors du chargement des techniciens: " + e.getMessage());
+        }
     }
 
     /**
@@ -249,8 +346,136 @@ public class InterventionDetailController {
      */
     @FXML
     private void handleModify() {
-        System.out.println("[InterventionDetail] Modify clicked");
-        showInfo("Fonction à implémenter");
+        // Create a simple edit dialog
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Modifier l'intervention");
+        dialog.setHeaderText("Modifier les informations de l'intervention");
+
+        // Create the form
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField titleField = new TextField(intervention.getTitle());
+        TextArea descField = new TextArea(intervention.getDescription());
+        descField.setWrapText(true);
+        descField.setPrefRowCount(4);
+        TextField locationField = new TextField(intervention.getLocation());
+
+        // Add validation
+        Label titleError = new Label();
+        titleError.setStyle("-fx-text-fill: red; -fx-font-size: 10;");
+        Label descError = new Label();
+        descError.setStyle("-fx-text-fill: red; -fx-font-size: 10;");
+        Label locationError = new Label();
+        locationError.setStyle("-fx-text-fill: red; -fx-font-size: 10;");
+
+        grid.add(new Label("Titre:"), 0, 0);
+        grid.add(titleField, 1, 0);
+        grid.add(titleError, 2, 0);
+        grid.add(new Label("Description:"), 0, 1);
+        grid.add(descField, 1, 1);
+        grid.add(descError, 2, 1);
+        grid.add(new Label("Localisation:"), 0, 2);
+        grid.add(locationField, 1, 2);
+        grid.add(locationError, 2, 2);
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Add buttons
+        ButtonType saveButtonType = new ButtonType("Sauvegarder", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButtonType = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, cancelButtonType);
+
+        // Enable/disable save button based on validation
+        Button saveButton = (Button) dialog.getDialogPane().lookupButton(saveButtonType);
+        saveButton.setDisable(false);
+
+        // Add validation listeners
+        titleField.textProperty().addListener((obs, oldVal, newVal) -> {
+            boolean isValid = validateTitle(newVal);
+            titleError.setText(isValid ? "" : "Le titre est requis (min. 3 caractères)");
+            saveButton.setDisable(!isValid || validateDescription(descField.getText()) || validateLocation(locationField.getText()));
+        });
+
+        descField.textProperty().addListener((obs, oldVal, newVal) -> {
+            boolean isValid = validateDescription(newVal);
+            descError.setText(isValid ? "" : "Description requise (min. 10 caractères)");
+            saveButton.setDisable(!validateTitle(titleField.getText()) || !isValid || validateLocation(locationField.getText()));
+        });
+
+        locationField.textProperty().addListener((obs, oldVal, newVal) -> {
+            boolean isValid = validateLocation(newVal);
+            locationError.setText(isValid ? "" : "Localisation requise (min. 5 caractères)");
+            saveButton.setDisable(!validateTitle(titleField.getText()) || validateDescription(descField.getText()) || !isValid);
+        });
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == saveButtonType) {
+                // Validate before saving
+                if (!validateTitle(titleField.getText()) || !validateDescription(descField.getText()) || !validateLocation(locationField.getText())) {
+                    showError("Veuillez corriger les erreurs de validation avant de sauvegarder");
+                    return null;
+                }
+
+                try {
+                    boolean success = InterventionDAO.updateIntervention(
+                        intervention.getId(),
+                        titleField.getText().trim(),
+                        descField.getText().trim(),
+                        intervention.getPriority(),
+                        intervention.getStatus(),
+                        locationField.getText().trim(),
+                        intervention.getAssignedTo()
+                    );
+
+                    if (success) {
+                        intervention.setTitle(titleField.getText().trim());
+                        intervention.setDescription(descField.getText().trim());
+                        intervention.setLocation(locationField.getText().trim());
+                        
+                        // Update UI
+                        interventionTitleLabel.setText(titleField.getText().trim());
+                        descriptionArea.setText(descField.getText().trim());
+                        locationLabel.setText(locationField.getText().trim());
+                        
+                        showInfo("Intervention modifiée avec succès");
+                        loadChangeHistory();
+                    } else {
+                        showError("Impossible de modifier l'intervention - Vérifiez les permissions");
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error modifying intervention: " + e.getMessage());
+                    e.printStackTrace();
+                    showError("Erreur lors de la modification: " + e.getMessage());
+                }
+            }
+            return null;
+        });
+
+        dialog.showAndWait();
+    }
+
+    /**
+     * Validate title field
+     */
+    private boolean validateTitle(String title) {
+        return title != null && title.trim().length() >= 3 && title.trim().length() <= 200;
+    }
+
+    /**
+     * Validate description field
+     */
+    private boolean validateDescription(String description) {
+        return description != null && description.trim().length() >= 10 && description.trim().length() <= 2000;
+    }
+
+    /**
+     * Validate location field
+     */
+    private boolean validateLocation(String location) {
+        return location != null && location.trim().length() >= 5 && location.trim().length() <= 500;
     }
 
     /**
@@ -258,8 +483,20 @@ public class InterventionDetailController {
      */
     @FXML
     private void handleCancel() {
-        if (showConfirmation("Êtes-vous sûr de vouloir annuler cette intervention?")) {
-            showInfo("Intervention annulée");
+        if (showConfirmation("Êtes-vous sûr de vouloir annuler cette intervention? Cette action est irréversible.")) {
+            try {
+                boolean success = InterventionDAO.updateInterventionStatus(intervention.getId(), "Annulée");
+                if (success) {
+                    showInfo("Intervention annulée avec succès");
+                    intervention.setStatus("Annulée");
+                    updateCloseButtonState();
+                    loadChangeHistory();
+                } else {
+                    showError("Impossible d'annuler l'intervention");
+                }
+            } catch (Exception e) {
+                showError("Erreur lors de l'annulation: " + e.getMessage());
+            }
         }
     }
 
@@ -336,5 +573,165 @@ public class InterventionDetailController {
         alert.setContentText(message);
         var result = alert.showAndWait();
         return result.isPresent() && result.get() == ButtonType.OK;
+    }
+
+    /**
+     * Initialize comment section
+     */
+    private void initializeCommentSection() {
+        if (commentTypeComboBox != null) {
+            commentTypeComboBox.getItems().addAll("INTERNE", "CLIENT", "MISE À JOUR STATUT", "NOTE");
+            commentTypeComboBox.setValue("INTERNE");
+        }
+    }
+
+    /**
+     * Load comments for the intervention
+     */
+    private void loadComments() {
+        try {
+            java.util.List<InterventionComment> comments = InterventionCommentDAO.getCommentsByInterventionId(interventionId);
+            
+            if (commentsContainer != null) {
+                commentsContainer.getChildren().clear();
+                
+                if (comments.isEmpty()) {
+                    if (noCommentsLabel != null) {
+                        noCommentsLabel.setVisible(true);
+                    }
+                } else {
+                    if (noCommentsLabel != null) {
+                        noCommentsLabel.setVisible(false);
+                    }
+                    
+                    for (InterventionComment comment : comments) {
+                        commentsContainer.getChildren().add(createCommentNode(comment));
+                    }
+                }
+                
+                // Update comment count
+                if (commentCountLabel != null) {
+                    commentCountLabel.setText("(" + comments.size() + ")");
+                }
+                
+                // Scroll to bottom
+                if (commentsScrollPane != null) {
+                    commentsScrollPane.setVvalue(1.0);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("[InterventionDetailController] Error loading comments: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Create UI node for a comment
+     */
+    private VBox createCommentNode(InterventionComment comment) {
+        VBox commentBox = new VBox(8);
+        commentBox.setStyle("-fx-background-color: #f8f9fa; -fx-padding: 12; -fx-border-radius: 8;");
+        
+        // Comment header
+        HBox headerBox = new HBox(8);
+        headerBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        
+        Label authorLabel = new Label(comment.getUserName());
+        authorLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #2d2d2d; -fx-font-size: 12;");
+        
+        Label typeLabel = new Label(comment.getCommentType());
+        typeLabel.setStyle("-fx-background-color: #e3f2fd; -fx-text-fill: white; -fx-padding: 2 6; -fx-border-radius: 4; -fx-font-size: 10;");
+        
+        Label timeLabel = new Label(formatCommentTime(comment.getCreatedAt()));
+        timeLabel.setStyle("-fx-text-fill: #999; -fx-font-size: 11;");
+        
+        headerBox.getChildren().addAll(authorLabel, typeLabel, new javafx.scene.layout.Region(), timeLabel);
+        
+        // Comment content
+        Label contentLabel = new Label(comment.getContent());
+        contentLabel.setStyle("-fx-text-fill: #2d2d2d; -fx-font-size: 12; -fx-wrap-text: true;");
+        contentLabel.setMaxWidth(Double.MAX_VALUE);
+        
+        commentBox.getChildren().addAll(headerBox, contentLabel);
+        
+        return commentBox;
+    }
+
+    /**
+     * Format comment time for display
+     */
+    private String formatCommentTime(java.time.LocalDateTime dateTime) {
+        if (dateTime == null) return "";
+        
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        java.time.Duration duration = java.time.Duration.between(dateTime, now);
+        
+        if (duration.toMinutes() < 1) {
+            return "À l'instant";
+        } else if (duration.toHours() < 1) {
+            return "Il y a " + duration.toMinutes() + " min";
+        } else if (duration.toDays() < 1) {
+            return "Il y a " + duration.toHours() + " h";
+        } else {
+            return dateTime.format(java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy à HH:mm"));
+        }
+    }
+
+    /**
+     * Handle adding a new comment
+     */
+    @FXML
+    private void handleAddComment() {
+        String content = newCommentArea != null ? newCommentArea.getText().trim() : "";
+        String commentType = commentTypeComboBox != null ? commentTypeComboBox.getValue() : "INTERNE";
+        
+        if (content.isEmpty()) {
+            showAlert("Commentaire requis", "Veuillez entrer un commentaire avant de l'ajouter.");
+            return;
+        }
+        
+        try {
+            // Get current user ID (you may need to adjust this based on your auth system)
+            long currentUserId = getCurrentUserId();
+            
+            // Create the comment
+            long commentId = InterventionCommentDAO.createComment(interventionId, currentUserId, content, commentType);
+            
+            if (commentId > 0) {
+                // Clear the comment area
+                if (newCommentArea != null) {
+                    newCommentArea.clear();
+                }
+                
+                // Reload comments
+                loadComments();
+                
+                showInfo("Commentaire ajouté avec succès");
+            } else {
+                showError("Erreur lors de l'ajout du commentaire");
+            }
+        } catch (Exception e) {
+            System.err.println("[InterventionDetailController] Error adding comment: " + e.getMessage());
+            showError("Erreur lors de l'ajout du commentaire");
+        }
+    }
+
+    /**
+     * Get current user ID (implement based on your authentication system)
+     */
+    private long getCurrentUserId() {
+        // This is a placeholder - implement based on your auth system
+        // For now, return 1 as a default
+        return 1L;
+    }
+
+    /**
+     * Show alert dialog
+     */
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
