@@ -78,6 +78,9 @@ public class Intervention {
         return technicianName;
     }
     public String getCreatedAt(){
+        if (createdAt == null || createdAt.isBlank()) {
+            return "N/A";
+        }
         return createdAt;
     }
 
