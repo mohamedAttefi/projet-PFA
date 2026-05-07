@@ -1,7 +1,9 @@
 package com.company.workorders.controller;
 
+import com.company.workorders.dao.HistoryDAO;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -20,11 +22,20 @@ public class HistoryController {
         actionColumn.setCellValueFactory(cell -> cell.getValue().actionProperty());
         userColumn.setCellValueFactory(cell -> cell.getValue().userProperty());
         detailColumn.setCellValueFactory(cell -> cell.getValue().detailProperty());
-        historyTable.setItems(FXCollections.observableArrayList(
-                new HistoryRow("2026-05-05 08:20", "Création intervention", "Nadia Ben", "Ticket #110 créé pour ACME Services"),
-                new HistoryRow("2026-05-05 09:05", "Mise à jour statut", "Karim Ali", "Ticket #110 passé à En cours"),
-                new HistoryRow("2026-05-05 10:12", "Clôture", "Jean Martin", "Ticket #109 clôturé avec succès")
-        ));
+        loadHistory();
+    }
+
+    private void loadHistory() {
+        ObservableList<HistoryRow> rows = FXCollections.observableArrayList();
+        for (Object[] data : HistoryDAO.getAllHistory()) {
+            rows.add(new HistoryRow(
+                    String.valueOf(data[0]),
+                    String.valueOf(data[1]),
+                    String.valueOf(data[2]),
+                    String.valueOf(data[3])
+            ));
+        }
+        historyTable.setItems(rows);
     }
 
     public static final class HistoryRow {
