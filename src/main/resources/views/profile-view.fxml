@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.ColumnConstraints?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.company.workorders.controller.ProfileController"
+            fitToWidth="true"
+            style="-fx-background-color: #f7f4f2;">
+    <VBox spacing="20" style="-fx-background-color: #f7f4f2;">
+        <padding><Insets top="24" right="24" bottom="28" left="24"/></padding>
+
+        <VBox spacing="4">
+            <Label text="Paramètres du profil" style="-fx-font-size: 28; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+            <Label text="Gérez vos informations personnelles, la sécurité et vos préférences."
+                   style="-fx-font-size: 13; -fx-text-fill: #7d6d68;"/>
+        </VBox>
+
+        <!-- Personal Information Section -->
+        <VBox spacing="14" style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 24;">
+            <Label text="Informations personnelles" style="-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+            <GridPane hgap="20" vgap="16">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="50"/>
+                    <ColumnConstraints percentWidth="50"/>
+                </columnConstraints>
+                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="Prénom" style="-fx-font-size: 12; -fx-text-fill: #7d6d68;"/>
+                    <TextField fx:id="firstNameField" text="Jean" style="-fx-pref-height: 40;"/>
+                </VBox>
+                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="Nom" style="-fx-font-size: 12; -fx-text-fill: #7d6d68;"/>
+                    <TextField fx:id="lastNameField" text="Dupont" style="-fx-pref-height: 40;"/>
+                </VBox>
+                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label text="Email professionnel" style="-fx-font-size: 12; -fx-text-fill: #7d6d68;"/>
+                    <TextField fx:id="emailField" text="jean.dupont@canal-informatique.fr" style="-fx-pref-height: 40;"/>
+                </VBox>
+                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Label text="Rôle au sein de l'entreprise" style="-fx-font-size: 12; -fx-text-fill: #7d6d68;"/>
+                    <ComboBox fx:id="roleBox" style="-fx-pref-height: 40;"/>
+                </VBox>
+            </GridPane>
+        </VBox>
+
+        <!-- Security Section -->
+        <VBox spacing="14" style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 24;">
+            <Label text="Sécurité" style="-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+            <GridPane hgap="20" vgap="16">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="33.3333"/>
+                    <ColumnConstraints percentWidth="33.3333"/>
+                    <ColumnConstraints percentWidth="33.3333"/>
+                </columnConstraints>
+                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="Ancien mot de passe" style="-fx-font-size: 12; -fx-text-fill: #7d6d68;"/>
+                    <PasswordField fx:id="currentPasswordField" style="-fx-pref-height: 40;"/>
+                </VBox>
+                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="Nouveau mot de passe" style="-fx-font-size: 12; -fx-text-fill: #7d6d68;"/>
+                    <PasswordField fx:id="newPasswordField" style="-fx-pref-height: 40;"/>
+                </VBox>
+                <VBox spacing="6" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                    <Label text="Confirmation du nouveau mot de passe" style="-fx-font-size: 12; -fx-text-fill: #7d6d68;"/>
+                    <PasswordField fx:id="confirmPasswordField" style="-fx-pref-height: 40;"/>
+                </VBox>
+            </GridPane>
+            <Label text="Le mot de passe doit contenir au moins 12 caractères, une majuscule et un chiffre." 
+                   style="-fx-font-size: 11; -fx-text-fill: #7d6d68; -fx-font-style: italic;"/>
+        </VBox>
+
+        <!-- Preferences Section -->
+        <VBox spacing="14" style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 24;">
+            <Label text="Préférences" style="-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+            <GridPane hgap="20" vgap="16">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="50"/>
+                    <ColumnConstraints percentWidth="50"/>
+                </columnConstraints>
+                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="Langue de l'interface" style="-fx-font-size: 12; -fx-text-fill: #7d6d68;"/>
+                    <ComboBox fx:id="languageBox" style="-fx-pref-height: 40;"/>
+                </VBox>
+                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="Mode d'affichage" style="-fx-font-size: 12; -fx-text-fill: #7d6d68;"/>
+                    <HBox spacing="8">
+                        <Button text="Clair" style="-fx-background-color: #c8102e; -fx-text-fill: white; -fx-cursor: hand;"/>
+                        <Button text="Sombre" style="-fx-background-color: white; -fx-border-color: #e1d7d3; -fx-text-fill: #2d2d2d; -fx-cursor: hand;"/>
+                    </HBox>
+                </VBox>
+            </GridPane>
+            
+            <VBox spacing="8">
+                <CheckBox fx:id="notificationsToggle" text="Notifications push" selected="true"/>
+                <Label text="Alerte lors des interventions urgentes" style="-fx-font-size: 11; -fx-text-fill: #7d6d68; -fx-padding: 0 0 0 24;"/>
+            </VBox>
+        </VBox>
+
+        <!-- Help Section -->
+        <VBox spacing="12" style="-fx-background-color: #fff2f2; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 20;">
+            <Label text="Besoin d'aide ?" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #c8102e;"/>
+            <Label text="Consultez notre documentation interne ou contactez le support technique pour toute modification de permissions." 
+                   style="-fx-font-size: 12; -fx-text-fill: #7d6d68;" wrapText="true"/>
+            <Button text="Support Technique" style="-fx-background-color: white; -fx-text-fill: #c8102e; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        </VBox>
+
+        <!-- Action Buttons -->
+        <HBox alignment="CENTER_RIGHT" spacing="12">
+            <Button text="Annuler" onAction="#handleResetProfile"
+                    style="-fx-background-color: white; -fx-border-color: #e1d7d3; -fx-text-fill: #2d2d2d; -fx-padding: 12 24; -fx-cursor: hand;"/>
+            <Button text="Enregistrer les modifications" onAction="#handleSaveProfile"
+                    style="-fx-background-color: #c8102e; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 24; -fx-cursor: hand;"/>
+        </HBox>
+    </VBox>
+</ScrollPane>
