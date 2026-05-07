@@ -12,23 +12,36 @@ import javafx.scene.layout.VBox;
 
 import java.awt.Desktop;
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Controller for the Intervention Detail View
  */
 public class InterventionDetailController {
 
-    @FXML private Label interventionRefLabel;
-    @FXML private Label interventionTitleLabel;
-    @FXML private Label interventionDateLabel;
-    @FXML private Label priorityLabel;
-    @FXML private Label clientNameLabel;
-    @FXML private Label clientCodeLabel;
-    @FXML private Label locationLabel;
-    @FXML private Label technicianNameLabel;
-    @FXML private TextArea descriptionArea;
-    @FXML private VBox historyContainer;
-    @FXML private Button closeBtn;
+    @FXML
+    private Label interventionRefLabel;
+    @FXML
+    private Label interventionTitleLabel;
+    @FXML
+    private Label interventionDateLabel;
+    @FXML
+    private Label priorityLabel;
+    @FXML
+    private Label clientNameLabel;
+    @FXML
+    private Label clientCodeLabel;
+    @FXML
+    private Label locationLabel;
+    @FXML
+    private Label technicianNameLabel;
+    @FXML
+    private TextArea descriptionArea;
+    @FXML
+    private VBox historyContainer;
+    @FXML
+    private Button closeBtn;
 
     private Intervention intervention;
     private long interventionId;
@@ -55,9 +68,8 @@ public class InterventionDetailController {
         // Set header information
         interventionRefLabel.setText("INT-" + String.format("%07d", intervention.getId()));
         interventionTitleLabel.setText(intervention.getTitle());
-        interventionDateLabel.setText("Créé "+intervention.getCreatedAt());
+        interventionDateLabel.setText("créé"+intervention.getCreatedAt());
 
-        updatePriorityLabel(intervention.getPriority());
 
         // Set client information
         var client = ClientDAO.getClientById(intervention.getClientId());
@@ -94,11 +106,14 @@ public class InterventionDetailController {
         String text = "⚠️ " + intervention.getStatus();
 
         if ("Haute".equals(priority)) {
-            priorityLabel.setStyle("-fx-background-color: #ffebee; -fx-text-fill: #c8102e; -fx-padding: 6 12; -fx-font-size: 12;");
+            priorityLabel.setStyle(
+                    "-fx-background-color: #ffebee; -fx-text-fill: #c8102e; -fx-padding: 6 12; -fx-font-size: 12;");
         } else if ("Normale".equals(priority)) {
-            priorityLabel.setStyle("-fx-background-color: #fff3cd; -fx-text-fill: #856404; -fx-padding: 6 12; -fx-font-size: 12;");
+            priorityLabel.setStyle(
+                    "-fx-background-color: #fff3cd; -fx-text-fill: #856404; -fx-padding: 6 12; -fx-font-size: 12;");
         } else {
-            priorityLabel.setStyle("-fx-background-color: #d4edda; -fx-text-fill: #155724; -fx-padding: 6 12; -fx-font-size: 12;");
+            priorityLabel.setStyle(
+                    "-fx-background-color: #d4edda; -fx-text-fill: #155724; -fx-padding: 6 12; -fx-font-size: 12;");
         }
 
         priorityLabel.setText(text);
@@ -174,7 +189,7 @@ public class InterventionDetailController {
                 return pane;
             }
         }
-        
+
         if (node instanceof javafx.scene.Parent) {
             javafx.scene.Parent parent = (javafx.scene.Parent) node;
             for (javafx.scene.Node child : parent.getChildrenUnmodifiable()) {
@@ -184,7 +199,7 @@ public class InterventionDetailController {
                 }
             }
         }
-        
+
         return null;
     }
 
