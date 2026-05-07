@@ -23,10 +23,10 @@
             <Label text="INDICATEURS CLÉS" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #999999; -fx-letter-spacing: 1;"/>
             <HBox spacing="18" prefHeight="180">
                 <!-- KPI 1: Total Interventions -->
-                <VBox styleClass="card" style="-fx-background-color: linear-gradient(135deg, #9e001f 0%, #c8102e 100%); -fx-border-width: 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 6, 0, 0, 2);" HBox.hgrow="ALWAYS" prefHeight="160">
+                <VBox styleClass="card" style="-fx-background-color: linear-gradient(to right, #9e001f, #c8102e); -fx-border-width: 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 6, 0, 0, 2);" HBox.hgrow="ALWAYS" prefHeight="160">
                     <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
                     <Label text="Interventions Totales" style="-fx-font-size: 11; -fx-text-fill: rgba(255,255,255,0.8);"/>
-                    <Label text="128" style="-fx-font-size: 44; -fx-font-weight: bold; -fx-text-fill: white; -fx-padding: 8 0;"/>
+                    <Label fx:id="totalInterventionsLabel" text="0" style="-fx-font-size: 44; -fx-font-weight: bold; -fx-text-fill: white; -fx-padding: 8 0;"/>
                     <Label text="↑ 12% ce mois" style="-fx-font-size: 10; -fx-text-fill: rgba(255,255,255,0.7);"/>
                 </VBox>
 
@@ -34,7 +34,7 @@
                 <VBox style="-fx-background-color: white; -fx-border-color: #f39c12; -fx-border-width: 2 0 0 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);" HBox.hgrow="ALWAYS" prefHeight="160">
                     <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
                     <Label text="Urgentes Non Traitées" style="-fx-font-size: 11; -fx-text-fill: #666666;"/>
-                    <Label text="14" style="-fx-font-size: 44; -fx-font-weight: bold; -fx-text-fill: #f39c12; -fx-padding: 8 0;"/>
+                    <Label fx:id="urgentesLabel" text="0" style="-fx-font-size: 44; -fx-font-weight: bold; -fx-text-fill: #f39c12; -fx-padding: 8 0;"/>
                     <Label text="Action requise" style="-fx-font-size: 10; -fx-text-fill: #f39c12;"/>
                 </VBox>
 
@@ -42,7 +42,7 @@
                 <VBox style="-fx-background-color: white; -fx-border-color: #3498db; -fx-border-width: 2 0 0 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);" HBox.hgrow="ALWAYS" prefHeight="160">
                     <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
                     <Label text="En Cours" style="-fx-font-size: 11; -fx-text-fill: #666666;"/>
-                    <Label text="32" style="-fx-font-size: 44; -fx-font-weight: bold; -fx-text-fill: #3498db; -fx-padding: 8 0;"/>
+                    <Label fx:id="enCoursLabel" text="0" style="-fx-font-size: 44; -fx-font-weight: bold; -fx-text-fill: #3498db; -fx-padding: 8 0;"/>
                     <Label text="→ Suivi actif" style="-fx-font-size: 10; -fx-text-fill: #3498db;"/>
                 </VBox>
 
@@ -50,7 +50,7 @@
                 <VBox style="-fx-background-color: white; -fx-border-color: #27ae60; -fx-border-width: 2 0 0 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);" HBox.hgrow="ALWAYS" prefHeight="160">
                     <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
                     <Label text="Terminées" style="-fx-font-size: 11; -fx-text-fill: #666666;"/>
-                    <Label text="82" style="-fx-font-size: 44; -fx-font-weight: bold; -fx-text-fill: #27ae60; -fx-padding: 8 0;"/>
+                    <Label fx:id="termineesLabel" text="0" style="-fx-font-size: 44; -fx-font-weight: bold; -fx-text-fill: #27ae60; -fx-padding: 8 0;"/>
                     <Label text="✓ Complétées" style="-fx-font-size: 10; -fx-text-fill: #27ae60;"/>
                 </VBox>
             </HBox>
