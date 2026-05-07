@@ -4,21 +4,22 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.image.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.company.workorders.util.LoginController"
             prefWidth="1200.0" prefHeight="800.0"
-            style="-fx-background-color: linear-gradient(135deg, #9e001f 0%, #c8102e 100%);">
+            style="-fx-background-color: linear-gradient(to right, #9e001f, #c8102e);">
 
     <!-- LEFT SIDE - BRANDING & INFO -->
     <left>
         <VBox spacing="22" alignment="TOP_CENTER"
               style="-fx-background-color: rgba(0,0,0,0.1); -fx-padding: 80px 40px;">
-            <StackPane prefWidth="260" prefHeight="260">
-                <Rectangle width="260" height="260" arcWidth="72" arcHeight="72" fill="#c8102e"/>
-                <Label text="CI"
-                       style="-fx-text-fill: white; -fx-font-size: 132px; -fx-font-weight: bold; -fx-font-family: Georgia;"/>
-            </StackPane>
+            <ImageView fitWidth="260" fitHeight="260" preserveRatio="true" smooth="true">
+                <image>
+                    <Image url="/images/canal_logo.png" />
+                </image>
+            </ImageView>
             <VBox spacing="2" alignment="CENTER">
                 <Label text="CANAL"
                        style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #ff2b4d;"/>
