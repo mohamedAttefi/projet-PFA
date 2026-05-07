@@ -146,6 +146,27 @@ public class AppShellController {
         AppNavigator.showLogin();
     }
 
+    /**
+     * Load intervention detail view with a specific intervention ID
+     */
+    public void loadInterventionDetail(long interventionId) {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/views/intervention-detail-view.fxml")
+            );
+            javafx.scene.Parent root = loader.load();
+            
+            // Get controller and initialize with intervention ID
+            InterventionDetailController controller = loader.getController();
+            controller.initialize(interventionId);
+            
+            contentPane.getChildren().setAll(root);
+        } catch (Exception e) {
+            System.err.println("[AppShellController] Error loading intervention detail: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     private void loadView(String fxmlPath) {
         contentPane.getChildren().setAll(AppNavigator.loadView(fxmlPath));
     }
