@@ -14,7 +14,7 @@ import java.sql.SQLException;
  * Authentication service that validates users against PostgreSQL.
  */
 public class AuthService {
-    private static final String USER_QUERY = "SELECT id, name, email, password, role FROM users WHERE email = ?";
+    private static final String USER_QUERY = "SELECT id, name, email, password, role FROM users WHERE email = ? AND COALESCE(is_active, TRUE) = TRUE";
 
     public AuthResult authenticate(String email, String password) {
         System.out.println("[AUTH] Tentative de connexion: " + email);
