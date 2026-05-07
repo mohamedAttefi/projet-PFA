@@ -1,10 +1,13 @@
 package com.company.workorders.controller;
 
 import com.company.workorders.dao.ClientDAO;
+import com.company.workorders.dao.HistoryDAO;
 import com.company.workorders.dao.InterventionDAO;
+import com.company.workorders.dao.NotificationDAO;
 import com.company.workorders.model.Client;
 import com.company.workorders.model.Intervention;
 import com.company.workorders.service.PermissionService;
+import com.company.workorders.service.SessionContext;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -22,6 +25,9 @@ public class InterventionsController {
     @FXML private ComboBox<String> clientBox;
     @FXML private ComboBox<String> assigneeBox;
     @FXML private TextField searchField;
+    @FXML private ComboBox<String> filterStatusBox;
+    @FXML private ComboBox<String> filterPriorityBox;
+    @FXML private ComboBox<String> filterTechnicianBox;
     @FXML private TableView<InterventionRow> interventionTable;
     @FXML private TableColumn<InterventionRow, String> titleColumn;
     @FXML private TableColumn<InterventionRow, String> priorityColumn;
@@ -39,7 +45,14 @@ public class InterventionsController {
     @FXML
     public void initialize() {
         priorityBox.getItems().addAll("Basse", "Normale", "Haute", "Critique");
-        statusBox.getItems().addAll("Nouvelle", "En cours", "Terminée", "Fermée");
+        statusBox.getItems().addAll("Nouvelle", "Assignée", "En cours", "Terminée", "Fermée", "Annulée");
+
+        filterStatusBox.getItems().addAll("Tous", "Nouvelle", "Assignée", "En cours", "Terminée", "Fermée", "Annulée");
+        filterStatusBox.setValue("Tous");
+        filterPriorityBox.getItems().addAll("Toutes", "Basse", "Normale", "Haute", "Critique", "Urgente");
+        filterPriorityBox.setValue("Toutes");
+        filterTechnicianBox.getItems().add("Tous");
+        filterTechnicianBox.setValue("Tous");
 
         titleColumn.setCellValueFactory(cell -> cell.getValue().titleProperty());
         priorityColumn.setCellValueFactory(cell -> cell.getValue().priorityProperty());
@@ -56,11 +69,19 @@ public class InterventionsController {
         // Load interventions
         loadInterventions();
 
-        // Table selection listener
+        // Table selection listener - double-click to open detail view
         interventionTable.setOnMouseClicked(event -> {
             InterventionRow selected = interventionTable.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 selectedIntervention = selected;
+                
+                // Double-click: open detail view
+                if (event.getClickCount() == 2) {
+                    openInterventionDetail(selected.getId());
+                    return;
+                }
+                
+                // Single-click: load into form
                 titleField.setText(selected.getTitle());
                 descriptionField.setText(selected.getDescription());
                 locationField.setText(selected.getLocation());
@@ -109,20 +130,29 @@ public class InterventionsController {
             Long id = (Long) tech[0];
             assigneeBox.getItems().add(name);
             technicianMap.put(name, id);
+            filterTechnicianBox.getItems().add(name);
         }
     }
 
     private void loadInterventions() {
-        java.util.List<Intervention> interventions;
-        
-        // Filter based on user role and permissions
-        if (PermissionService.canViewAllInterventions()) {
-            interventions = InterventionDAO.getAllInterventions();
-        } else if (PermissionService.canViewOnlyAssignedInterventions()) {
-            interventions = InterventionDAO.getInterventionsByTechnician(PermissionService.getCurrentUserId());
-        } else {
-            interventions = new java.util.ArrayList<>();
+        String term = searchField != null ? searchField.getText() : "";
+        String status = filterStatusBox != null ? filterStatusBox.getValue() : "Tous";
+        String priority = filterPriorityBox != null ? filterPriorityBox.getValue() : "Toutes";
+        String technician = filterTechnicianBox != null ? filterTechnicianBox.getValue() : "Tous";
+
+        Long technicianId = null;
+        if (technician != null && !"Tous".equalsIgnoreCase(technician)) {
+            technicianId = technicianMap.get(technician);
         }
+
+        java.util.List<Intervention> interventions = InterventionDAO.searchInterventions(
+                term,
+                status,
+                priority,
+                technicianId,
+                PermissionService.canViewOnlyAssignedInterventions(),
+                PermissionService.getCurrentUserId()
+        );
 
         ObservableList<InterventionRow> rows = FXCollections.observableArrayList();
         for (Intervention intervention : interventions) {
@@ -168,6 +198,7 @@ public class InterventionsController {
                 boolean success = InterventionDAO.updateIntervention(selectedIntervention.getId(), 
                         title, description, priority, status, location, assignedTo != null ? assignedTo : 0);
                 if (success) {
+                    addHistory("Mise à jour intervention", selectedIntervention.getId(), title);
                     showAlert("Succès", "Intervention mise à jour");
                     handleResetForm();
                     loadInterventions();
@@ -181,6 +212,8 @@ public class InterventionsController {
                 long interventionId = InterventionDAO.createIntervention(title, description, priority, status, 
                         location, clientId != null ? clientId : 0, assignedTo != null ? assignedTo : 0);
                 if (interventionId > 0) {
+                    addHistory("Création intervention", interventionId, title);
+                    NotificationDAO.createNotification(null, "Nouvelle intervention: " + title);
                     showAlert("Succès", "Intervention créée");
                     handleResetForm();
                     loadInterventions();
@@ -211,6 +244,7 @@ public class InterventionsController {
         if (confirm.showAndWait().get() == ButtonType.OK) {
             try {
                 if (InterventionDAO.deleteIntervention(selectedIntervention.getId())) {
+                    addHistory("Suppression intervention", selectedIntervention.getId(), selectedIntervention.getTitle());
                     showAlert("Succès", "Intervention supprimée");
                     handleResetForm();
                     loadInterventions();
@@ -230,7 +264,18 @@ public class InterventionsController {
         statusBox.getSelectionModel().clearSelection();
         clientBox.getSelectionModel().clearSelection();
         assigneeBox.getSelectionModel().clearSelection();
-        searchField.clear();
+        if (searchField != null) {
+            searchField.clear();
+        }
+        if (filterStatusBox != null) {
+            filterStatusBox.setValue("Tous");
+        }
+        if (filterPriorityBox != null) {
+            filterPriorityBox.setValue("Toutes");
+        }
+        if (filterTechnicianBox != null) {
+            filterTechnicianBox.setValue("Tous");
+        }
         selectedIntervention = null;
         interventionTable.getSelectionModel().clearSelection();
         loadInterventions();
@@ -238,9 +283,81 @@ public class InterventionsController {
 
     @FXML
     private void handleSearch() {
-        String searchTerm = searchField.getText().trim();
-        if (searchTerm.isEmpty()) {
+        loadInterventions();
+    }
+
+    @FXML
+    private void handleViewDetails() {
+        if (selectedIntervention == null) {
+            showAlert("Détails", "Sélectionnez une intervention pour voir les détails.");
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Détails intervention");
+        alert.setHeaderText(selectedIntervention.getTitle());
+        alert.setContentText(
+                "Client: " + selectedIntervention.getClient() + "\n" +
+                "Technicien: " + selectedIntervention.getAssigned() + "\n" +
+                "Statut: " + selectedIntervention.getStatus() + "\n" +
+                "Priorité: " + selectedIntervention.getPriority() + "\n" +
+                "Localisation: " + selectedIntervention.getLocation() + "\n\n" +
+                "Description:\n" + selectedIntervention.getDescription()
+        );
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void handleAddTechnicalNote() {
+        if (!PermissionService.canAddComments()) {
+            showAlert("Permission refusée", "Vous n'avez pas la permission d'ajouter des notes.");
+            return;
+        }
+        if (selectedIntervention == null) {
+            showAlert("Validation", "Sélectionnez une intervention.");
+            return;
+        }
+
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Note technique");
+        dialog.setHeaderText("Ajouter une note technique");
+        dialog.setContentText("Note:");
+
+        dialog.showAndWait().ifPresent(note -> {
+            String trimmed = note.trim();
+            if (!trimmed.isEmpty()) {
+                addHistory("Note technique", selectedIntervention.getId(), trimmed);
+                showAlert("Succès", "Note technique ajoutée.");
+            }
+        });
+    }
+
+    @FXML
+    private void handleCloseIntervention() {
+        if (selectedIntervention == null) {
+            showAlert("Validation", "Sélectionnez une intervention à clôturer.");
+            return;
+        }
+
+        if (!PermissionService.canChangeInterventionStatus()) {
+            showAlert("Permission refusée", "Vous n'avez pas la permission de modifier le statut.");
+            return;
+        }
+
+        if (PermissionService.canViewOnlyAssignedInterventions()
+                && !selectedIntervention.getAssigned().equals(SessionContext.getCurrentUser() != null ? SessionContext.getCurrentUser().getName() : "")) {
+            showAlert("Permission refusée", "Vous pouvez clôturer uniquement vos interventions assignées.");
+            return;
+        }
+
+        boolean success = InterventionDAO.updateInterventionStatus(selectedIntervention.getId(), "Terminée");
+        if (success) {
+            addHistory("Clôture intervention", selectedIntervention.getId(), selectedIntervention.getTitle());
+            NotificationDAO.createNotification(null, "Intervention terminée: " + selectedIntervention.getTitle());
             loadInterventions();
+            showAlert("Succès", "Intervention marquée comme Terminée.");
+        } else {
+            showAlert("Erreur", "Impossible de clôturer l'intervention.");
         }
     }
 
@@ -250,6 +367,65 @@ public class InterventionsController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void addHistory(String action, long entityId, String details) {
+        long userId = SessionContext.getCurrentUser() != null ? SessionContext.getCurrentUser().getId() : 0;
+        HistoryDAO.addHistory(userId, action, "Intervention", entityId, details);
+    }
+
+    /**
+     * Open the intervention detail view for a specific intervention
+     */
+    private void openInterventionDetail(long interventionId) {
+        try {
+            // Load the detail view
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/views/intervention-detail-view.fxml")
+            );
+            javafx.scene.Parent detailView = loader.load();
+            InterventionDetailController controller = loader.getController();
+            controller.initialize(interventionId);
+            
+            // Find the content pane parent and swap the view
+            javafx.scene.Parent currentParent = (javafx.scene.Parent) interventionTable.getScene().getRoot();
+            javafx.scene.layout.StackPane contentPane = findContentPane(currentParent);
+            
+            if (contentPane != null) {
+                contentPane.getChildren().setAll(detailView);
+            } else {
+                System.err.println("[InterventionsController] Could not find content pane");
+            }
+        } catch (Exception e) {
+            System.err.println("[InterventionsController] Error opening intervention detail: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Recursively search for the content pane in the scene graph
+     */
+    private javafx.scene.layout.StackPane findContentPane(javafx.scene.Node node) {
+        if (node instanceof javafx.scene.layout.StackPane) {
+            javafx.scene.layout.StackPane pane = (javafx.scene.layout.StackPane) node;
+            // Check if this is the content pane by checking for fx:id or other markers
+            // For now, we'll assume it's a StackPane that's a child of BorderPane
+            if (node.getParent() instanceof javafx.scene.layout.BorderPane) {
+                return pane;
+            }
+        }
+        
+        if (node instanceof javafx.scene.Parent) {
+            javafx.scene.Parent parent = (javafx.scene.Parent) node;
+            for (javafx.scene.Node child : parent.getChildrenUnmodifiable()) {
+                javafx.scene.layout.StackPane found = findContentPane(child);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        
+        return null;
     }
 
     public static final class InterventionRow {
