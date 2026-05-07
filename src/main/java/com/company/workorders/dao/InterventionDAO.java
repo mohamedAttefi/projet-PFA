@@ -39,7 +39,8 @@ public class InterventionDAO {
                         rs.getLong("client_id"),
                         rs.getLong("assigned_to"),
                         rs.getString("company_name"),
-                        rs.getString("name")
+                        rs.getString("name"),
+                        rs.getString("created_at")
                 );
                 interventions.add(intervention);
             }
@@ -80,7 +81,8 @@ public class InterventionDAO {
                             rs.getLong("client_id"),
                             rs.getLong("assigned_to"),
                             rs.getString("company_name"),
-                            rs.getString("name")
+                            rs.getString("name"),
+                            rs.getString("created_at")
                     );
                     interventions.add(intervention);
                 }
@@ -120,7 +122,8 @@ public class InterventionDAO {
                             rs.getLong("client_id"),
                             rs.getLong("assigned_to"),
                             rs.getString("company_name"),
-                            rs.getString("name")
+                            rs.getString("name"),
+                            rs.getString("created_at")
                     );
                 }
             }
@@ -278,7 +281,8 @@ public class InterventionDAO {
                             rs.getLong("client_id"),
                             rs.getLong("assigned_to"),
                             rs.getString("company_name"),
-                            rs.getString("name")
+                            rs.getString("name"),
+                            rs.getString("created_at")
                     );
                     interventions.add(intervention);
                 }
@@ -320,7 +324,8 @@ public class InterventionDAO {
                             rs.getLong("client_id"),
                             rs.getLong("assigned_to"),
                             rs.getString("company_name"),
-                            rs.getString("name")
+                            rs.getString("name"),
+                            rs.getString("created_at")
                     );
                     interventions.add(intervention);
                 }
@@ -410,7 +415,8 @@ public class InterventionDAO {
                             rs.getLong("client_id"),
                             rs.getLong("assigned_to"),
                             rs.getString("company_name"),
-                            rs.getString("name")
+                            rs.getString("name"),
+                            rs.getString("created_at")
                     ));
                 }
             }
