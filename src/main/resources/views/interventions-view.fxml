@@ -4,60 +4,91 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.company.workorders.controller.InterventionsController"
+            fitToWidth="true"
             style="-fx-background-color: #f7f4f2;">
-    <top>
-        <VBox spacing="8" style="-fx-background-color: white; -fx-border-color: #edd7d4; -fx-border-width: 0 0 1 0;">
-            <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
-            <Label text="Gestion des interventions" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #410007;"/>
-            <Label text="Créer une intervention, l’assigner et suivre son cycle de vie." style="-fx-text-fill: #6f5651;"/>
+    <VBox spacing="20" style="-fx-background-color: #f7f4f2;">
+        <padding><Insets top="24" right="24" bottom="28" left="24"/></padding>
+
+        <VBox spacing="4">
+            <Label text="Liste des Interventions" style="-fx-font-size: 28; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+            <Label text="Gérez et suivez toutes vos interventions de maintenance."
+                   style="-fx-font-size: 13; -fx-text-fill: #7d6d68;"/>
         </VBox>
-    </top>
-    <center>
-        <SplitPane dividerPositions="0.38">
-            <VBox spacing="12" style="-fx-background-color: white;">
-                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-                <Label text="Nouvelle intervention" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
-                <TextField fx:id="titleField" promptText="Titre"/>
-                <TextArea fx:id="descriptionField" promptText="Description" prefRowCount="4" wrapText="true"/>
-                <TextField fx:id="locationField" promptText="Localisation"/>
-                <ComboBox fx:id="priorityBox" promptText="Priorité"/>
-                <ComboBox fx:id="statusBox" promptText="Statut"/>
-                <ComboBox fx:id="clientBox" promptText="Client"/>
-                <ComboBox fx:id="assigneeBox" promptText="Technicien"/>
-                <HBox spacing="10">
-                    <Button fx:id="saveButton" text="Enregistrer" onAction="#handleSaveIntervention"/>
-                    <Button fx:id="deleteButton" text="Supprimer" onAction="#handleDeleteIntervention"/>
-                    <Button fx:id="resetButton" text="Réinitialiser" onAction="#handleResetForm"/>
-                </HBox>
-            </VBox>
-            <VBox spacing="12" style="-fx-background-color: white;">
-                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="Recherche"/>
-                    <TextField fx:id="searchField" promptText="Rechercher une intervention" onAction="#handleSearch"/>
-                    <Button text="Rechercher" onAction="#handleSearch"/>
-                    <ComboBox fx:id="filterStatusBox" promptText="Statut" onAction="#handleSearch"/>
-                    <ComboBox fx:id="filterPriorityBox" promptText="Priorité" onAction="#handleSearch"/>
-                    <ComboBox fx:id="filterTechnicianBox" promptText="Technicien" onAction="#handleSearch"/>
-                    <Button text="Réinitialiser" onAction="#handleResetForm"/>
-                </HBox>
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Button text="Voir détails" onAction="#handleViewDetails"/>
-                    <Button text="Ajouter note technique" onAction="#handleAddTechnicalNote"/>
-                    <Button text="Clôturer intervention" onAction="#handleCloseIntervention"/>
-                </HBox>
-                <TableView fx:id="interventionTable" prefHeight="500">
-                    <columns>
-                        <TableColumn fx:id="titleColumn" text="Titre" prefWidth="170"/>
-                        <TableColumn fx:id="priorityColumn" text="Priorité" prefWidth="100"/>
-                        <TableColumn fx:id="statusColumn" text="Statut" prefWidth="100"/>
-                        <TableColumn fx:id="clientColumn" text="Client" prefWidth="180"/>
-                        <TableColumn fx:id="assignedColumn" text="Technicien" prefWidth="160"/>
-                    </columns>
-                </TableView>
-            </VBox>
-        </SplitPane>
-    </center>
-</BorderPane>
+
+        <VBox spacing="14" style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 16;">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="Rechercher une intervention..." HBox.hgrow="ALWAYS"
+                           onAction="#handleSearch"
+                           style="-fx-background-color: #f7f4f2; -fx-background-radius: 8; -fx-border-color: #f0e6e2; -fx-border-radius: 8; -fx-padding: 10 14;"/>
+                <ComboBox fx:id="filterStatusBox" promptText="Statut: Tous" onAction="#handleSearch" prefWidth="120"/>
+                <ComboBox fx:id="filterPriorityBox" promptText="Priorité: Toutes" onAction="#handleSearch" prefWidth="130"/>
+                <ComboBox fx:id="filterTechnicianBox" promptText="Technicien" onAction="#handleSearch" prefWidth="160"/>
+                <DatePicker fx:id="startDatePicker" promptText="Date début" onAction="#handleSearch" prefWidth="120"/>
+                <DatePicker fx:id="endDatePicker" promptText="Date fin" onAction="#handleSearch" prefWidth="120"/>
+            </HBox>
+            <HBox spacing="10">
+                <Button text="+ Nouvelle Intervention" onAction="#createNewIntervention"
+                        style="-fx-background-color: #c8102e; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 18; -fx-cursor: hand;"/>
+                <Button text="📊 Exporter CSV" onAction="#handleExportToCSV"
+                        style="-fx-background-color: white; -fx-border-color: #e1d7d3; -fx-text-fill: #2d2d2d; -fx-padding: 10 18; -fx-cursor: hand;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+
+        <VBox spacing="14" style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 20;">
+            <TableView fx:id="interventionTable" prefHeight="400">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="80"/>
+                    <TableColumn fx:id="titleColumn" text="TITRE" prefWidth="250"/>
+                    <TableColumn fx:id="clientColumn" text="CLIENT" prefWidth="180"/>
+                    <TableColumn fx:id="priorityColumn" text="PRIORITÉ" prefWidth="100"/>
+                    <TableColumn fx:id="statusColumn" text="STATUT" prefWidth="100"/>
+                    <TableColumn fx:id="technicianColumn" text="TECHNICIEN" prefWidth="140"/>
+                    <TableColumn fx:id="dateColumn" text="DATE" prefWidth="100"/>
+                    <TableColumn fx:id="actionsColumn" text="ACTIONS" prefWidth="120"/>
+                </columns>
+            </TableView>
+
+            <HBox spacing="16" alignment="CENTER_LEFT">
+                <Label fx:id="paginationInfoLabel" text="Affichage de 0 à 0 sur 0 interventions" style="-fx-font-size: 12; -fx-text-fill: #7d6d68;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="←" onAction="#handlePreviousPage" style="-fx-background-color: white; -fx-border-color: #e1d7d3; -fx-cursor: hand;"/>
+                <Button text="1" onAction="#handlePage1" fx:id="page1Button" style="-fx-background-color: #c8102e; -fx-text-fill: white; -fx-cursor: hand;"/>
+                <Button text="2" onAction="#handlePage2" fx:id="page2Button" style="-fx-background-color: white; -fx-border-color: #e1d7d3; -fx-cursor: hand;"/>
+                <Button text="3" onAction="#handlePage3" fx:id="page3Button" style="-fx-background-color: white; -fx-border-color: #e1d7d3; -fx-cursor: hand;"/>
+                <Button text="→" onAction="#handleNextPage" style="-fx-background-color: white; -fx-border-color: #e1d7d3; -fx-cursor: hand;"/>
+            </HBox>
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="Actions rapides:" style="-fx-font-size: 12; -fx-text-fill: #7d6d68;"/>
+                <Button text="Voir détails" onAction="#handleViewDetails" 
+                        style="-fx-background-color: white; -fx-border-color: #e1d7d3; -fx-text-fill: #2d2d2d; -fx-padding: 8 16; -fx-cursor: hand;"/>
+                <Button text="Modifier" onAction="#handleEditIntervention" 
+                        style="-fx-background-color: white; -fx-border-color: #e1d7d3; -fx-text-fill: #2d2d2d; -fx-padding: 8 16; -fx-cursor: hand;"/>
+                <Button text="Assigner technicien" onAction="#handleAssignTechnician" 
+                        style="-fx-background-color: white; -fx-border-color: #e1d7d3; -fx-text-fill: #2d2d2d; -fx-padding: 8 16; -fx-cursor: hand;"/>
+                <Button text="Changer statut" onAction="#handleChangeStatus" 
+                        style="-fx-background-color: white; -fx-border-color: #e1d7d3; -fx-text-fill: #2d2d2d; -fx-padding: 8 16; -fx-cursor: hand;"/>
+                <Button text="Supprimer" onAction="#handleDeleteIntervention" 
+                        style="-fx-background-color: white; -fx-border-color: #f1c4c4; -fx-text-fill: #c8102e; -fx-padding: 8 16; -fx-cursor: hand;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <HBox spacing="16">
+                <VBox spacing="4" HBox.hgrow="ALWAYS" style="-fx-background-color: #fff8f8; -fx-background-radius: 10; -fx-padding: 14;">
+                    <Label text="URGENCES" style="-fx-font-size: 10; -fx-text-fill: #c8102e;"/>
+                    <Label text="3" style="-fx-font-size: 24; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS" style="-fx-background-color: #fffaf1; -fx-background-radius: 10; -fx-padding: 14;">
+                    <Label text="EN ATTENTE" style="-fx-font-size: 10; -fx-text-fill: #f39c12;"/>
+                    <Label text="12" style="-fx-font-size: 24; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS" style="-fx-background-color: #f3fbf6; -fx-background-radius: 10; -fx-padding: 14;">
+                    <Label text="CLÔTURÉES (24H)" style="-fx-font-size: 10; -fx-text-fill: #27ae60;"/>
+                    <Label text="8" style="-fx-font-size: 24; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </VBox>
+</ScrollPane>
