@@ -379,7 +379,6 @@ public class InterventionsController {
      */
     private void openInterventionDetail(long interventionId) {
         try {
-            // Load the detail view
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
                     getClass().getResource("/views/intervention-detail-view.fxml")
             );
