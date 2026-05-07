@@ -352,4 +352,72 @@ public class InterventionDAO {
 
         return technicians;
     }
+
+    public static List<Intervention> searchInterventions(String term, String status, String priority, Long technicianId, boolean onlyAssignedToCurrentUser, long currentUserId) {
+        List<Intervention> interventions = new ArrayList<>();
+        StringBuilder query = new StringBuilder(
+                "SELECT i.id, i.title, i.description, i.priority, i.status, i.location, i.client_id, i.assigned_to, c.company_name, u.name " +
+                        "FROM interventions i " +
+                        "LEFT JOIN clients c ON i.client_id = c.id " +
+                        "LEFT JOIN users u ON i.assigned_to = u.id WHERE 1=1"
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (term != null && !term.isBlank()) {
+            query.append(" AND (LOWER(i.title) LIKE LOWER(?) OR LOWER(COALESCE(i.description, '')) LIKE LOWER(?) OR LOWER(COALESCE(c.company_name, '')) LIKE LOWER(?) OR LOWER(COALESCE(u.name, '')) LIKE LOWER(?))");
+            String pattern = "%" + term.trim() + "%";
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+        }
+        if (status != null && !status.isBlank() && !"Tous".equalsIgnoreCase(status)) {
+            query.append(" AND i.status = ?");
+            params.add(status);
+        }
+        if (priority != null && !priority.isBlank() && !"Toutes".equalsIgnoreCase(priority)) {
+            query.append(" AND i.priority = ?");
+            params.add(priority);
+        }
+        if (technicianId != null && technicianId > 0) {
+            query.append(" AND i.assigned_to = ?");
+            params.add(technicianId);
+        }
+        if (onlyAssignedToCurrentUser && currentUserId > 0) {
+            query.append(" AND i.assigned_to = ?");
+            params.add(currentUserId);
+        }
+
+        query.append(" ORDER BY i.id DESC");
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    interventions.add(new Intervention(
+                            rs.getLong("id"),
+                            rs.getString("title"),
+                            rs.getString("description"),
+                            rs.getString("priority"),
+                            rs.getString("status"),
+                            rs.getString("location"),
+                            rs.getLong("client_id"),
+                            rs.getLong("assigned_to"),
+                            rs.getString("company_name"),
+                            rs.getString("name")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[InterventionDAO] Error searching interventions: " + e.getMessage());
+        }
+
+        return interventions;
+    }
 }
