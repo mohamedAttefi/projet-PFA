@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.company.workorders.controller.NewInterventionController"
+            fitToWidth="true"
+            style="-fx-background-color: #f7f4f2;">
+    <VBox spacing="20" style="-fx-background-color: #f7f4f2;">
+        <padding><Insets top="24" right="24" bottom="28" left="24"/></padding>
+
+        <VBox spacing="4">
+            <Label text="Nouvelle Intervention" style="-fx-font-size: 28; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+            <Label text="Créez une nouvelle intervention de maintenance."
+                   style="-fx-font-size: 13; -fx-text-fill: #7d6d68;"/>
+        </VBox>
+
+        <VBox spacing="16" style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 24;">
+            
+            <!-- Basic Information -->
+            <VBox spacing="8">
+                <Label text="INFORMATIONS GÉNÉRALES" style="-fx-font-size: 11; -fx-font-weight: 600; -fx-text-fill: #7d6d68;"/>
+                <Separator style="-fx-background-color: #ebe2de;"/>
+            </VBox>
+            
+            <GridPane hgap="20" vgap="16">
+                <Label text="Titre de l'intervention *" GridPane.columnIndex="0" GridPane.rowIndex="0" 
+                       style="-fx-font-weight: 500; -fx-text-fill: #2d2d2d;"/>
+                <TextField fx:id="titleField" GridPane.columnIndex="0" GridPane.rowIndex="1" 
+                           promptText="Entrez le titre de l'intervention"
+                           style="-fx-background-color: #f7f4f2; -fx-background-radius: 8; -fx-border-color: #f0e6e2; -fx-border-radius: 8; -fx-padding: 10 14;"/>
+                
+                <Label text="Description *" GridPane.columnIndex="1" GridPane.rowIndex="0" 
+                       style="-fx-font-weight: 500; -fx-text-fill: #2d2d2d;"/>
+                <TextArea fx:id="descriptionArea" GridPane.columnIndex="1" GridPane.rowIndex="1" 
+                          promptText="Décrivez l'intervention à effectuer"
+                          prefRowCount="3"
+                          style="-fx-background-color: #f7f4f2; -fx-background-radius: 8; -fx-border-color: #f0e6e2; -fx-border-radius: 8; -fx-padding: 10 14;"/>
+            </GridPane>
+            
+            <!-- Location and Priority -->
+            <VBox spacing="8" style="-fx-padding-top: 16;">
+                <Label text="LOCALISATION ET PRIORITÉ" style="-fx-font-size: 11; -fx-font-weight: 600; -fx-text-fill: #7d6d68;"/>
+                <Separator style="-fx-background-color: #ebe2de;"/>
+            </VBox>
+            
+            <GridPane hgap="20" vgap="16">
+                <Label text="Localisation *" GridPane.columnIndex="0" GridPane.rowIndex="0" 
+                       style="-fx-font-weight: 500; -fx-text-fill: #2d2d2d;"/>
+                <TextField fx:id="locationField" GridPane.columnIndex="0" GridPane.rowIndex="1" 
+                           promptText="Adresse ou localisation de l'intervention"
+                           style="-fx-background-color: #f7f4f2; -fx-background-radius: 8; -fx-border-color: #f0e6e2; -fx-border-radius: 8; -fx-padding: 10 14;"/>
+                
+                <Label text="Priorité *" GridPane.columnIndex="1" GridPane.rowIndex="0" 
+                       style="-fx-font-weight: 500; -fx-text-fill: #2d2d2d;"/>
+                <ComboBox fx:id="priorityComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" 
+                          promptText="Sélectionnez la priorité"
+                          style="-fx-background-color: #f7f4f2; -fx-background-radius: 8; -fx-border-color: #f0e6e2; -fx-border-radius: 8; -fx-padding: 10 14;"/>
+            </GridPane>
+            
+            <!-- Assignment -->
+            <VBox spacing="8" style="-fx-padding-top: 16;">
+                <Label text="ASSIGNATION" style="-fx-font-size: 11; -fx-font-weight: 600; -fx-text-fill: #7d6d68;"/>
+                <Separator style="-fx-background-color: #ebe2de;"/>
+            </VBox>
+            
+            <GridPane hgap="20" vgap="16">
+                <Label text="Client *" GridPane.columnIndex="0" GridPane.rowIndex="0" 
+                       style="-fx-font-weight: 500; -fx-text-fill: #2d2d2d;"/>
+                <ComboBox fx:id="clientComboBox" GridPane.columnIndex="0" GridPane.rowIndex="1" 
+                          promptText="Sélectionnez le client"
+                          style="-fx-background-color: #f7f4f2; -fx-background-radius: 8; -fx-border-color: #f0e6e2; -fx-border-radius: 8; -fx-padding: 10 14;"/>
+                
+                <Label text="Technicien assigné" GridPane.columnIndex="1" GridPane.rowIndex="0" 
+                       style="-fx-font-weight: 500; -fx-text-fill: #2d2d2d;"/>
+                <ComboBox fx:id="technicianComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" 
+                          promptText="Sélectionnez un technicien (optionnel)"
+                          style="-fx-background-color: #f7f4f2; -fx-background-radius: 8; -fx-border-color: #f0e6e2; -fx-border-radius: 8; -fx-padding: 10 14;"/>
+            </GridPane>
+            
+            <!-- Validation Messages -->
+            <VBox fx:id="validationMessagesBox" spacing="4" style="-fx-padding: 10; -fx-background-color: #fff8f8; -fx-background-radius: 8; -fx-border-color: #f1c4c4; -fx-border-radius: 8; -fx-visible: false;">
+                <Label fx:id="validationTitleLabel" text="Erreurs de validation" style="-fx-font-weight: 600; -fx-text-fill: #c8102e; -fx-font-size: 12;"/>
+                <Label fx:id="validationMessageLabel" text="" style="-fx-text-fill: #c8102e; -fx-font-size: 11;"/>
+            </VBox>
+            
+            <!-- Action Buttons -->
+            <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding-top: 20;">
+                <Button text="Annuler" onAction="#handleCancel"
+                        style="-fx-background-color: white; -fx-border-color: #e1d7d3; -fx-text-fill: #2d2d2d; -fx-padding: 10 24; -fx-cursor: hand;"/>
+                <Button text="Créer l'intervention" onAction="#handleCreateIntervention"
+                        style="-fx-background-color: #c8102e; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 24; -fx-cursor: hand;"/>
+            </HBox>
+        </VBox>
+    </VBox>
+</ScrollPane>
