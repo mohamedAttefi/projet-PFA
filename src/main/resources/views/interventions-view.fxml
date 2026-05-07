@@ -38,6 +38,15 @@
                     <Label text="Recherche"/>
                     <TextField fx:id="searchField" promptText="Rechercher une intervention" onAction="#handleSearch"/>
                     <Button text="Rechercher" onAction="#handleSearch"/>
+                    <ComboBox fx:id="filterStatusBox" promptText="Statut" onAction="#handleSearch"/>
+                    <ComboBox fx:id="filterPriorityBox" promptText="Priorité" onAction="#handleSearch"/>
+                    <ComboBox fx:id="filterTechnicianBox" promptText="Technicien" onAction="#handleSearch"/>
+                    <Button text="Réinitialiser" onAction="#handleResetForm"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button text="Voir détails" onAction="#handleViewDetails"/>
+                    <Button text="Ajouter note technique" onAction="#handleAddTechnicalNote"/>
+                    <Button text="Clôturer intervention" onAction="#handleCloseIntervention"/>
                 </HBox>
                 <TableView fx:id="interventionTable" prefHeight="500">
                     <columns>
