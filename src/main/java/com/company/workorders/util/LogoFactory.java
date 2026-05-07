@@ -8,12 +8,23 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import java.io.InputStream;
 
 public final class LogoFactory {
     private LogoFactory() {
     }
 
     public static Image createAppIcon(int size) {
+        // Try loading a packaged logo image first
+        try (InputStream is = LogoFactory.class.getResourceAsStream("/images/canal_logo.png")) {
+            if (is != null) {
+                Image img = new Image(is, size, size, true, true);
+                return img;
+            }
+        } catch (Exception e) {
+            // ignore and fall back to generated icon
+        }
+
         Canvas canvas = new Canvas(size, size);
         GraphicsContext graphics = canvas.getGraphicsContext2D();
 
