@@ -1,5 +1,7 @@
 package com.company.workorders.dao;
 
+import com.company.workorders.model.User;
+import com.company.workorders.model.UserRole;
 import com.company.workorders.service.AuthService;
 import com.company.workorders.util.DBConnection;
 
@@ -8,6 +10,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
+
+    public static User getUserById(long userId) {
+        String query = "SELECT id, name, email, role, COALESCE(is_active, TRUE) AS is_active FROM users WHERE id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setLong(1, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String roleStr = rs.getString("role");
+                    UserRole role = UserRole.RECEPTIONIST; // default
+                    try {
+                        role = UserRole.valueOf(roleStr.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("[UserDAO] Unknown role: " + roleStr);
+                    }
+                    
+                    return new User(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            role
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[UserDAO] Error getting user by ID: " + e.getMessage());
+        }
+
+        return null;
+    }
 
     public static List<Object[]> getAllUsers() {
         List<Object[]> users = new ArrayList<>();
