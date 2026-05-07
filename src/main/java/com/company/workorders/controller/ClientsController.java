@@ -1,8 +1,10 @@
 package com.company.workorders.controller;
 
 import com.company.workorders.dao.ClientDAO;
+import com.company.workorders.dao.HistoryDAO;
 import com.company.workorders.model.Client;
 import com.company.workorders.service.PermissionService;
+import com.company.workorders.service.SessionContext;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,11 +17,14 @@ public class ClientsController {
     @FXML private TextField companyField;
     @FXML private TextField phoneField;
     @FXML private TextField addressField;
+    @FXML private TextField emailField;
     @FXML private TextField searchField;
+    @FXML private ListView<String> clientHistoryList;
     @FXML private TableView<ClientRow> clientTable;
     @FXML private TableColumn<ClientRow, String> companyColumn;
     @FXML private TableColumn<ClientRow, String> phoneColumn;
     @FXML private TableColumn<ClientRow, String> addressColumn;
+    @FXML private TableColumn<ClientRow, String> emailColumn;
     @FXML private Button saveButton;
     @FXML private Button deleteButton;
     @FXML private Button resetButton;
@@ -31,6 +36,7 @@ public class ClientsController {
         companyColumn.setCellValueFactory(cell -> cell.getValue().companyProperty());
         phoneColumn.setCellValueFactory(cell -> cell.getValue().phoneProperty());
         addressColumn.setCellValueFactory(cell -> cell.getValue().addressProperty());
+        emailColumn.setCellValueFactory(cell -> cell.getValue().emailProperty());
 
         // Load data from database
         loadClients();
@@ -43,6 +49,8 @@ public class ClientsController {
                 companyField.setText(selected.getCompany());
                 phoneField.setText(selected.getPhone());
                 addressField.setText(selected.getAddress());
+                emailField.setText(selected.getEmail());
+                loadClientHistory(selected.getId());
             }
         });
 
@@ -54,6 +62,7 @@ public class ClientsController {
             companyField.setEditable(false);
             phoneField.setEditable(false);
             addressField.setEditable(false);
+            emailField.setEditable(false);
             searchField.setEditable(false);
         }
     }
@@ -78,6 +87,7 @@ public class ClientsController {
         String company = companyField.getText().trim();
         String phone = phoneField.getText().trim();
         String address = addressField.getText().trim();
+        String email = emailField.getText().trim();
 
         if (company.isEmpty()) {
             showAlert("Erreur", "Le nom de l'entreprise est requis");
@@ -87,8 +97,9 @@ public class ClientsController {
         try {
             if (selectedClient != null && selectedClient.getId() != -1) {
                 // Update existing client
-                boolean success = ClientDAO.updateClient(selectedClient.getId(), company, phone, address);
+                boolean success = ClientDAO.updateClient(selectedClient.getId(), company, phone, address, email);
                 if (success) {
+                    addHistory("Mise à jour client", selectedClient.getId(), company);
                     showAlert("Succès", "Client mis à jour avec succès");
                     selectedClient = null;
                     handleResetForm();
@@ -98,8 +109,9 @@ public class ClientsController {
                 }
             } else {
                 // Create new client
-                long clientId = ClientDAO.createClient(company, phone, address, "");
+                long clientId = ClientDAO.createClient(company, phone, address, email);
                 if (clientId > 0) {
+                    addHistory("Création client", clientId, company);
                     showAlert("Succès", "Client créé avec succès");
                     handleResetForm();
                     loadClients();
@@ -133,6 +145,7 @@ public class ClientsController {
             try {
                 boolean success = ClientDAO.deleteClient(selectedClient.getId());
                 if (success) {
+                    addHistory("Suppression client", selectedClient.getId(), selectedClient.getCompany());
                     showAlert("Succès", "Client supprimé avec succès");
                     selectedClient = null;
                     handleResetForm();
@@ -151,7 +164,11 @@ public class ClientsController {
         companyField.clear();
         phoneField.clear();
         addressField.clear();
+        emailField.clear();
         searchField.clear();
+        if (clientHistoryList != null) {
+            clientHistoryList.getItems().clear();
+        }
         selectedClient = null;
         clientTable.getSelectionModel().clearSelection();
         loadClients();
@@ -186,26 +203,45 @@ public class ClientsController {
         alert.showAndWait();
     }
 
+    private void loadClientHistory(long clientId) {
+        if (clientHistoryList == null) {
+            return;
+        }
+        clientHistoryList.getItems().setAll(ClientDAO.getInterventionHistoryForClient(clientId));
+        if (clientHistoryList.getItems().isEmpty()) {
+            clientHistoryList.getItems().add("Aucune intervention enregistrée pour ce client.");
+        }
+    }
+
+    private void addHistory(String action, long clientId, String details) {
+        long userId = SessionContext.getCurrentUser() != null ? SessionContext.getCurrentUser().getId() : 0;
+        HistoryDAO.addHistory(userId, action, "Client", clientId, details);
+    }
+
     public static final class ClientRow {
         private final SimpleLongProperty id;
         private final SimpleStringProperty company;
         private final SimpleStringProperty phone;
         private final SimpleStringProperty address;
+        private final SimpleStringProperty email;
 
         public ClientRow(long id, String company, String phone, String address, String email) {
             this.id = new SimpleLongProperty(id);
             this.company = new SimpleStringProperty(company);
             this.phone = new SimpleStringProperty(phone);
             this.address = new SimpleStringProperty(address);
+            this.email = new SimpleStringProperty(email);
         }
 
         public long getId() { return id.get(); }
         public String getCompany() { return company.get(); }
         public String getPhone() { return phone.get(); }
         public String getAddress() { return address.get(); }
+        public String getEmail() { return email.get(); }
 
         public SimpleStringProperty companyProperty() { return company; }
         public SimpleStringProperty phoneProperty() { return phone; }
         public SimpleStringProperty addressProperty() { return address; }
+        public SimpleStringProperty emailProperty() { return email; }
     }
 }
