@@ -18,7 +18,7 @@ public class InterventionDAO {
     public static List<Intervention> getAllInterventions() {
         List<Intervention> interventions = new ArrayList<>();
         String query = "SELECT i.id, i.title, i.description, i.priority, i.status, i.location, " +
-                       "i.client_id, i.assigned_to, c.company_name, u.name " +
+                   "i.client_id, i.assigned_to, i.created_at, c.company_name, u.name " +
                        "FROM interventions i " +
                        "LEFT JOIN clients c ON i.client_id = c.id " +
                        "LEFT JOIN users u ON i.assigned_to = u.id " +
@@ -57,7 +57,7 @@ public class InterventionDAO {
     public static List<Intervention> getInterventionsByTechnician(long technicianId) {
         List<Intervention> interventions = new ArrayList<>();
         String query = "SELECT i.id, i.title, i.description, i.priority, i.status, i.location, " +
-                       "i.client_id, i.assigned_to, c.company_name, u.name " +
+                       "i.client_id, i.assigned_to, i.created_at, c.company_name, u.name " +
                        "FROM interventions i " +
                        "LEFT JOIN clients c ON i.client_id = c.id " +
                        "LEFT JOIN users u ON i.assigned_to = u.id " +
@@ -99,7 +99,7 @@ public class InterventionDAO {
      */
     public static Intervention getInterventionById(long interventionId) {
         String query = "SELECT i.id, i.title, i.description, i.priority, i.status, i.location, " +
-                       "i.client_id, i.assigned_to, c.company_name, u.name " +
+                       "i.client_id, i.assigned_to, i.created_at, c.company_name, u.name " +
                        "FROM interventions i " +
                        "LEFT JOIN clients c ON i.client_id = c.id " +
                        "LEFT JOIN users u ON i.assigned_to = u.id " +
@@ -257,7 +257,7 @@ public class InterventionDAO {
     public static List<Intervention> getInterventionsByStatus(String status) {
         List<Intervention> interventions = new ArrayList<>();
         String query = "SELECT i.id, i.title, i.description, i.priority, i.status, i.location, " +
-                       "i.client_id, i.assigned_to, c.company_name, u.name " +
+                       "i.client_id, i.assigned_to, i.created_at, c.company_name, u.name " +
                        "FROM interventions i " +
                        "LEFT JOIN clients c ON i.client_id = c.id " +
                        "LEFT JOIN users u ON i.assigned_to = u.id " +
@@ -300,7 +300,7 @@ public class InterventionDAO {
     public static List<Intervention> getInterventionsByPriority(String priority) {
         List<Intervention> interventions = new ArrayList<>();
         String query = "SELECT i.id, i.title, i.description, i.priority, i.status, i.location, " +
-                       "i.client_id, i.assigned_to, c.company_name, u.name " +
+                       "i.client_id, i.assigned_to, i.created_at, c.company_name, u.name " +
                        "FROM interventions i " +
                        "LEFT JOIN clients c ON i.client_id = c.id " +
                        "LEFT JOIN users u ON i.assigned_to = u.id " +
@@ -361,10 +361,10 @@ public class InterventionDAO {
     public static List<Intervention> searchInterventions(String term, String status, String priority, Long technicianId, boolean onlyAssignedToCurrentUser, long currentUserId) {
         List<Intervention> interventions = new ArrayList<>();
         StringBuilder query = new StringBuilder(
-                "SELECT i.id, i.title, i.description, i.priority, i.status, i.location, i.client_id, i.assigned_to, c.company_name, u.name " +
-                        "FROM interventions i " +
-                        "LEFT JOIN clients c ON i.client_id = c.id " +
-                        "LEFT JOIN users u ON i.assigned_to = u.id WHERE 1=1"
+            "SELECT i.id, i.title, i.description, i.priority, i.status, i.location, i.client_id, i.assigned_to, i.created_at, c.company_name, u.name " +
+                "FROM interventions i " +
+                "LEFT JOIN clients c ON i.client_id = c.id " +
+                "LEFT JOIN users u ON i.assigned_to = u.id WHERE 1=1"
         );
 
         List<Object> params = new ArrayList<>();
@@ -422,6 +422,282 @@ public class InterventionDAO {
             }
         } catch (SQLException e) {
             System.err.println("[InterventionDAO] Error searching interventions: " + e.getMessage());
+        }
+
+        return interventions;
+    }
+
+    /**
+     * Count interventions matching search criteria
+     */
+    public static int countSearchInterventions(String term, String status, String priority, Long technicianId, boolean onlyAssignedToCurrentUser, long currentUserId) {
+        StringBuilder query = new StringBuilder(
+            "SELECT COUNT(*) FROM interventions i " +
+                "LEFT JOIN clients c ON i.client_id = c.id " +
+                "LEFT JOIN users u ON i.assigned_to = u.id WHERE 1=1"
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (term != null && !term.isBlank()) {
+            query.append(" AND (LOWER(i.title) LIKE LOWER(?) OR LOWER(COALESCE(i.description, '')) LIKE LOWER(?) OR LOWER(COALESCE(c.company_name, '')) LIKE LOWER(?) OR LOWER(COALESCE(u.name, '')) LIKE LOWER(?))");
+            String pattern = "%" + term.trim() + "%";
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+        }
+        if (status != null && !status.isBlank() && !"Tous".equalsIgnoreCase(status)) {
+            query.append(" AND i.status = ?");
+            params.add(status);
+        }
+        if (priority != null && !priority.isBlank() && !"Toutes".equalsIgnoreCase(priority)) {
+            query.append(" AND i.priority = ?");
+            params.add(priority);
+        }
+        if (technicianId != null && technicianId > 0) {
+            query.append(" AND i.assigned_to = ?");
+            params.add(technicianId);
+        }
+        if (onlyAssignedToCurrentUser && currentUserId > 0) {
+            query.append(" AND i.assigned_to = ?");
+            params.add(currentUserId);
+        }
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[InterventionDAO] Error counting search interventions: " + e.getMessage());
+        }
+
+        return 0;
+    }
+
+    /**
+     * Search interventions with pagination
+     */
+    public static List<Intervention> searchInterventionsPaginated(String term, String status, String priority, Long technicianId, boolean onlyAssignedToCurrentUser, long currentUserId, int page, int itemsPerPage) {
+        List<Intervention> interventions = new ArrayList<>();
+        StringBuilder query = new StringBuilder(
+            "SELECT i.id, i.title, i.description, i.priority, i.status, i.location, i.client_id, i.assigned_to, i.created_at, c.company_name, u.name " +
+                "FROM interventions i " +
+                "LEFT JOIN clients c ON i.client_id = c.id " +
+                "LEFT JOIN users u ON i.assigned_to = u.id WHERE 1=1"
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (term != null && !term.isBlank()) {
+            query.append(" AND (LOWER(i.title) LIKE LOWER(?) OR LOWER(COALESCE(i.description, '')) LIKE LOWER(?) OR LOWER(COALESCE(c.company_name, '')) LIKE LOWER(?) OR LOWER(COALESCE(u.name, '')) LIKE LOWER(?))");
+            String pattern = "%" + term.trim() + "%";
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+        }
+        if (status != null && !status.isBlank() && !"Tous".equalsIgnoreCase(status)) {
+            query.append(" AND i.status = ?");
+            params.add(status);
+        }
+        if (priority != null && !priority.isBlank() && !"Toutes".equalsIgnoreCase(priority)) {
+            query.append(" AND i.priority = ?");
+            params.add(priority);
+        }
+        if (technicianId != null && technicianId > 0) {
+            query.append(" AND i.assigned_to = ?");
+            params.add(technicianId);
+        }
+        if (onlyAssignedToCurrentUser && currentUserId > 0) {
+            query.append(" AND i.assigned_to = ?");
+            params.add(currentUserId);
+        }
+
+        query.append(" ORDER BY i.id DESC LIMIT ? OFFSET ?");
+        params.add(itemsPerPage);
+        params.add((page - 1) * itemsPerPage);
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    interventions.add(new Intervention(
+                            rs.getLong("id"),
+                            rs.getString("title"),
+                            rs.getString("description"),
+                            rs.getString("priority"),
+                            rs.getString("status"),
+                            rs.getString("location"),
+                            rs.getLong("client_id"),
+                            rs.getLong("assigned_to"),
+                            rs.getString("company_name"),
+                            rs.getString("name"),
+                            rs.getString("created_at")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[InterventionDAO] Error searching paginated interventions: " + e.getMessage());
+        }
+
+        return interventions;
+    }
+
+    /**
+     * Count interventions matching search criteria with date filtering
+     */
+    public static int countSearchInterventionsWithDates(String term, String status, String priority, Long technicianId, boolean onlyAssignedToCurrentUser, long currentUserId, java.time.LocalDate startDate, java.time.LocalDate endDate) {
+        StringBuilder query = new StringBuilder(
+            "SELECT COUNT(*) FROM interventions i " +
+                "LEFT JOIN clients c ON i.client_id = c.id " +
+                "LEFT JOIN users u ON i.assigned_to = u.id WHERE 1=1"
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (term != null && !term.isBlank()) {
+            query.append(" AND (LOWER(i.title) LIKE LOWER(?) OR LOWER(COALESCE(i.description, '')) LIKE LOWER(?) OR LOWER(COALESCE(c.company_name, '')) LIKE LOWER(?) OR LOWER(COALESCE(u.name, '')) LIKE LOWER(?))");
+            String pattern = "%" + term.trim() + "%";
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+        }
+        if (status != null && !status.isBlank() && !"Tous".equalsIgnoreCase(status)) {
+            query.append(" AND i.status = ?");
+            params.add(status);
+        }
+        if (priority != null && !priority.isBlank() && !"Toutes".equalsIgnoreCase(priority)) {
+            query.append(" AND i.priority = ?");
+            params.add(priority);
+        }
+        if (technicianId != null && technicianId > 0) {
+            query.append(" AND i.assigned_to = ?");
+            params.add(technicianId);
+        }
+        if (onlyAssignedToCurrentUser && currentUserId > 0) {
+            query.append(" AND i.assigned_to = ?");
+            params.add(currentUserId);
+        }
+        if (startDate != null) {
+            query.append(" AND DATE(i.created_at) >= ?");
+            params.add(startDate.toString());
+        }
+        if (endDate != null) {
+            query.append(" AND DATE(i.created_at) <= ?");
+            params.add(endDate.toString());
+        }
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[InterventionDAO] Error counting search interventions with dates: " + e.getMessage());
+        }
+
+        return 0;
+    }
+
+    /**
+     * Search interventions with pagination and date filtering
+     */
+    public static List<Intervention> searchInterventionsPaginatedWithDates(String term, String status, String priority, Long technicianId, boolean onlyAssignedToCurrentUser, long currentUserId, int page, int itemsPerPage, java.time.LocalDate startDate, java.time.LocalDate endDate) {
+        List<Intervention> interventions = new ArrayList<>();
+        StringBuilder query = new StringBuilder(
+            "SELECT i.id, i.title, i.description, i.priority, i.status, i.location, i.client_id, i.assigned_to, i.created_at, c.company_name, u.name " +
+                "FROM interventions i " +
+                "LEFT JOIN clients c ON i.client_id = c.id " +
+                "LEFT JOIN users u ON i.assigned_to = u.id WHERE 1=1"
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (term != null && !term.isBlank()) {
+            query.append(" AND (LOWER(i.title) LIKE LOWER(?) OR LOWER(COALESCE(i.description, '')) LIKE LOWER(?) OR LOWER(COALESCE(c.company_name, '')) LIKE LOWER(?) OR LOWER(COALESCE(u.name, '')) LIKE LOWER(?))");
+            String pattern = "%" + term.trim() + "%";
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+            params.add(pattern);
+        }
+        if (status != null && !status.isBlank() && !"Tous".equalsIgnoreCase(status)) {
+            query.append(" AND i.status = ?");
+            params.add(status);
+        }
+        if (priority != null && !priority.isBlank() && !"Toutes".equalsIgnoreCase(priority)) {
+            query.append(" AND i.priority = ?");
+            params.add(priority);
+        }
+        if (technicianId != null && technicianId > 0) {
+            query.append(" AND i.assigned_to = ?");
+            params.add(technicianId);
+        }
+        if (onlyAssignedToCurrentUser && currentUserId > 0) {
+            query.append(" AND i.assigned_to = ?");
+            params.add(currentUserId);
+        }
+        if (startDate != null) {
+            query.append(" AND DATE(i.created_at) >= ?");
+            params.add(startDate.toString());
+        }
+        if (endDate != null) {
+            query.append(" AND DATE(i.created_at) <= ?");
+            params.add(endDate.toString());
+        }
+
+        query.append(" ORDER BY i.id DESC LIMIT ? OFFSET ?");
+        params.add(itemsPerPage);
+        params.add((page - 1) * itemsPerPage);
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    interventions.add(new Intervention(
+                            rs.getLong("id"),
+                            rs.getString("title"),
+                            rs.getString("description"),
+                            rs.getString("priority"),
+                            rs.getString("status"),
+                            rs.getString("location"),
+                            rs.getLong("client_id"),
+                            rs.getLong("assigned_to"),
+                            rs.getString("company_name"),
+                            rs.getString("name"),
+                            rs.getString("created_at")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[InterventionDAO] Error searching paginated interventions with dates: " + e.getMessage());
         }
 
         return interventions;
