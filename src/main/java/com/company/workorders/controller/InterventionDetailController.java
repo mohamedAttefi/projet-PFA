@@ -55,9 +55,8 @@ public class InterventionDetailController {
         // Set header information
         interventionRefLabel.setText("INT-" + String.format("%07d", intervention.getId()));
         interventionTitleLabel.setText(intervention.getTitle());
-        interventionDateLabel.setText("Créé le 24 Mai 2024 • Entvenue - Aujourd'hui, 10:00");
+        interventionDateLabel.setText("Créé "+intervention.getCreatedAt());
 
-        // Set priority
         updatePriorityLabel(intervention.getPriority());
 
         // Set client information
