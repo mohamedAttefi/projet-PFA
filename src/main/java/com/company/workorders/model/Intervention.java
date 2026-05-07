@@ -14,9 +14,10 @@ public class Intervention {
     private long assignedTo; // User ID
     private String clientName;
     private String technicianName;
+    private String createdAt;
 
     public Intervention(long id, String title, String description, String priority, String status,
-                       String location, long clientId, long assignedTo) {
+                       String location, long clientId, long assignedTo, String createdAt) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -25,12 +26,13 @@ public class Intervention {
         this.location = location;
         this.clientId = clientId;
         this.assignedTo = assignedTo;
+        this.createdAt = createdAt;
     }
 
     // Constructor with client and technician names
     public Intervention(long id, String title, String description, String priority, String status,
-                       String location, long clientId, long assignedTo, String clientName, String technicianName) {
-        this(id, title, description, priority, status, location, clientId, assignedTo);
+                       String location, long clientId, long assignedTo, String clientName, String technicianName, String createdAt) {
+        this(id, title, description, priority, status, location, clientId, assignedTo,createdAt);
         this.clientName = clientName;
         this.technicianName = technicianName;
     }
@@ -74,6 +76,9 @@ public class Intervention {
 
     public String getTechnicianName() {
         return technicianName;
+    }
+    public String getCreatedAt(){
+        return createdAt;
     }
 
     @Override
