@@ -4,76 +4,177 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.company.workorders.controller.DashboardController"
-            style="-fx-background-color: #f7f4f2; -fx-fit-to-width: true;">
-    <VBox spacing="24" style="-fx-background-color: #f7f4f2;">
+            fitToWidth="true"
+            style="-fx-background-color: #f7f4f2;">
+    <VBox spacing="22" style="-fx-background-color: #f7f4f2;">
         <padding>
-            <Insets top="32" right="32" bottom="32" left="32"/>
+            <Insets top="24" right="24" bottom="28" left="24"/>
         </padding>
 
-        <!-- PAGE TITLE -->
-        <VBox spacing="8">
-            <Label text="Tableau de Bord" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #410007;"/>
-            <Label text="Synthèse des activités et des interventions" style="-fx-font-size: 13; -fx-text-fill: #666666;"/>
-        </VBox>
-
-        <!-- KPI CARDS SECTION -->
         <VBox spacing="4">
-            <Label text="INDICATEURS CLÉS" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #999999; -fx-letter-spacing: 1;"/>
-            <HBox spacing="18" prefHeight="180">
-                <!-- KPI 1: Total Interventions -->
-                <VBox styleClass="card" style="-fx-background-color: linear-gradient(to right, #9e001f, #c8102e); -fx-border-width: 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 6, 0, 0, 2);" HBox.hgrow="ALWAYS" prefHeight="160">
-                    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
-                    <Label text="Interventions Totales" style="-fx-font-size: 11; -fx-text-fill: rgba(255,255,255,0.8);"/>
-                    <Label fx:id="totalInterventionsLabel" text="0" style="-fx-font-size: 44; -fx-font-weight: bold; -fx-text-fill: white; -fx-padding: 8 0;"/>
-                    <Label text="↑ 12% ce mois" style="-fx-font-size: 10; -fx-text-fill: rgba(255,255,255,0.7);"/>
-                </VBox>
+            <Label text="Tableau de Bord" style="-fx-font-size: 28; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+            <Label text="Analyse globale des performances de maintenance en temps réel"
+                   style="-fx-font-size: 13; -fx-text-fill: #7d6d68;"/>
+        </VBox>
 
-                <!-- KPI 2: Urgentes -->
-                <VBox style="-fx-background-color: white; -fx-border-color: #f39c12; -fx-border-width: 2 0 0 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);" HBox.hgrow="ALWAYS" prefHeight="160">
-                    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
-                    <Label text="Urgentes Non Traitées" style="-fx-font-size: 11; -fx-text-fill: #666666;"/>
-                    <Label fx:id="urgentesLabel" text="0" style="-fx-font-size: 44; -fx-font-weight: bold; -fx-text-fill: #f39c12; -fx-padding: 8 0;"/>
-                    <Label text="Action requise" style="-fx-font-size: 10; -fx-text-fill: #f39c12;"/>
-                </VBox>
+        <!-- Nouvelle Intervention Button -->
+        <HBox alignment="CENTER_LEFT">
+            <Button text="+ Nouvelle Intervention" onAction="#createNewIntervention"
+                    style="-fx-background-color: #c8102e; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 8; -fx-cursor: hand;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+        </HBox>
 
-                <!-- KPI 3: En Cours -->
-                <VBox style="-fx-background-color: white; -fx-border-color: #3498db; -fx-border-width: 2 0 0 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);" HBox.hgrow="ALWAYS" prefHeight="160">
-                    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
-                    <Label text="En Cours" style="-fx-font-size: 11; -fx-text-fill: #666666;"/>
-                    <Label fx:id="enCoursLabel" text="0" style="-fx-font-size: 44; -fx-font-weight: bold; -fx-text-fill: #3498db; -fx-padding: 8 0;"/>
-                    <Label text="→ Suivi actif" style="-fx-font-size: 10; -fx-text-fill: #3498db;"/>
-                </VBox>
+        <!-- Performance Metrics Cards -->
+        <HBox spacing="16">
+            <VBox spacing="8" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 18;">
+                <Label text="PERFORMANCE MOYENNE" style="-fx-font-size: 10; -fx-text-fill: #8a7b76; -fx-letter-spacing: 1;"/>
+                <Label fx:id="performanceLabel" text="92.4%" style="-fx-font-size: 30; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                <Label text="+4.2%" style="-fx-font-size: 11; -fx-text-fill: #27ae60;"/>
+            </VBox>
+            <VBox spacing="8" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 18;">
+                <Label text="INTERVENTIONS CRITIQUES" style="-fx-font-size: 10; -fx-text-fill: #8a7b76; -fx-letter-spacing: 1;"/>
+                <Label fx:id="critiquesLabel" text="08" style="-fx-font-size: 30; -fx-font-weight: 800; -fx-text-fill: #c8102e;"/>
+                <Label text="Attention" style="-fx-font-size: 11; -fx-text-fill: #f39c12;"/>
+            </VBox>
+            <VBox spacing="8" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 18;">
+                <Label text="CHARGE DE TRAVAIL / TECH" style="-fx-font-size: 10; -fx-text-fill: #8a7b76; -fx-letter-spacing: 1;"/>
+                <Label fx:id="chargeLabel" text="6.2" style="-fx-font-size: 30; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                <Label text="bons/j • 85% capacité" style="-fx-font-size: 11; -fx-text-fill: #7d6d68;"/>
+            </VBox>
+            <VBox spacing="8" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 18;">
+                <Label text="TAUX DE RÉSOLUTION (SLA)" style="-fx-font-size: 10; -fx-text-fill: #8a7b76; -fx-letter-spacing: 1;"/>
+                <Label fx:id="slaLabel" text="98.1%" style="-fx-font-size: 30; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                <Label text="Ce mois" style="-fx-font-size: 11; -fx-text-fill: #7d6d68;"/>
+            </VBox>
+        </HBox>
 
-                <!-- KPI 4: Terminées -->
-                <VBox style="-fx-background-color: white; -fx-border-color: #27ae60; -fx-border-width: 2 0 0 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);" HBox.hgrow="ALWAYS" prefHeight="160">
-                    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
-                    <Label text="Terminées" style="-fx-font-size: 11; -fx-text-fill: #666666;"/>
-                    <Label fx:id="termineesLabel" text="0" style="-fx-font-size: 44; -fx-font-weight: bold; -fx-text-fill: #27ae60; -fx-padding: 8 0;"/>
-                    <Label text="✓ Complétées" style="-fx-font-size: 10; -fx-text-fill: #27ae60;"/>
+        <!-- Charts Section -->
+        <HBox spacing="16">
+            <!-- Volume Chart -->
+            <VBox spacing="14" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 20;">
+                <Label text="Volume d'interventions par semaine" style="-fx-font-size: 16; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                <VBox spacing="8" alignment="CENTER">
+                    <HBox spacing="20" alignment="BOTTOM_CENTER" style="-fx-pref-height: 180;">
+                        <VBox spacing="4" alignment="CENTER">
+                            <Region prefWidth="40" prefHeight="120" style="-fx-background-color: #c8102e; -fx-background-radius: 4;"/>
+                            <Label text="SEM 01" style="-fx-font-size: 10; -fx-text-fill: #7d6d68;"/>
+                        </VBox>
+                        <VBox spacing="4" alignment="CENTER">
+                            <Region prefWidth="40" prefHeight="80" style="-fx-background-color: #c8102e; -fx-background-radius: 4;"/>
+                            <Label text="SEM 02" style="-fx-font-size: 10; -fx-text-fill: #7d6d68;"/>
+                        </VBox>
+                        <VBox spacing="4" alignment="CENTER">
+                            <Region prefWidth="40" prefHeight="140" style="-fx-background-color: #c8102e; -fx-background-radius: 4;"/>
+                            <Label text="SEM 03" style="-fx-font-size: 10; -fx-text-fill: #7d6d68;"/>
+                        </VBox>
+                        <VBox spacing="4" alignment="CENTER">
+                            <Region prefWidth="40" prefHeight="100" style="-fx-background-color: #c8102e; -fx-background-radius: 4;"/>
+                            <Label text="SEM 04" style="-fx-font-size: 10; -fx-text-fill: #7d6d68;"/>
+                        </VBox>
+                    </HBox>
                 </VBox>
+            </VBox>
+
+            <!-- Priority Distribution Chart -->
+            <VBox spacing="14" prefWidth="300"
+                  style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 20;">
+                <Label text="Répartition par priorité" style="-fx-font-size: 16; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                <VBox spacing="12" alignment="CENTER">
+                    <Region prefWidth="120" prefHeight="120" style="-fx-background-color: #f0e6e2; -fx-background-radius: 60;"/>
+                    <VBox spacing="4" alignment="CENTER">
+                        <Label text="Total" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                        <Label fx:id="totalInterventionsLabel" text="124" style="-fx-font-size: 24; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                    </VBox>
+                    <VBox spacing="6" style="-fx-padding: 12 0 0 0;">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Region prefWidth="12" prefHeight="12" style="-fx-background-color: #c8102e; -fx-background-radius: 2;"/>
+                            <Label text="Critique" style="-fx-font-size: 11; -fx-text-fill: #7d6d68;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="12%" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                        </HBox>
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Region prefWidth="12" prefHeight="12" style="-fx-background-color: #f39c12; -fx-background-radius: 2;"/>
+                            <Label text="Élevée" style="-fx-font-size: 11; -fx-text-fill: #7d6d68;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="28%" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                        </HBox>
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Region prefWidth="12" prefHeight="12" style="-fx-background-color: #27ae60; -fx-background-radius: 2;"/>
+                            <Label text="Standard" style="-fx-font-size: 11; -fx-text-fill: #7d6d68;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="60%" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+            </VBox>
+        </HBox>
+
+        <!-- Recent Interventions Table -->
+        <VBox spacing="14" style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 20;">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Interventions récentes" style="-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Hyperlink text="Voir toutes les interventions" onAction="#viewAllInterventions"/>
             </HBox>
-        </VBox>
-
-        <!-- RECENT ACTIVITY SECTION -->
-        <VBox spacing="12" style="-fx-background-color: white; -fx-border-color: #e8e8e8; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);">
-            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-            <VBox spacing="4">
-                <Label text="ACTIVITÉ RÉCENTE" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
-                <Label text="Les 5 dernières interventions traitées" style="-fx-font-size: 11; -fx-text-fill: #999999;"/>
+            
+            <!-- Table Header -->
+            <HBox spacing="8" style="-fx-padding: 12 0; -fx-border-color: #ebe2de; -fx-border-width: 0 0 1 0;">
+                <Label text="ID / CLIENT" style="-fx-font-size: 11; -fx-text-fill: #8a7b76; -fx-font-weight: bold; -fx-pref-width: 180;"/>
+                <Label text="SUJET" style="-fx-font-size: 11; -fx-text-fill: #8a7b76; -fx-font-weight: bold;" HBox.hgrow="ALWAYS"/>
+                <Label text="PRIORITÉ" style="-fx-font-size: 11; -fx-text-fill: #8a7b76; -fx-font-weight: bold; -fx-pref-width: 100;"/>
+                <Label text="TECHNICIEN" style="-fx-font-size: 11; -fx-text-fill: #8a7b76; -fx-font-weight: bold; -fx-pref-width: 140;"/>
+                <Label text="DÉLAI SLA" style="-fx-font-size: 11; -fx-text-fill: #8a7b76; -fx-font-weight: bold; -fx-pref-width: 120;"/>
+                <Label text="STATUT" style="-fx-font-size: 11; -fx-text-fill: #8a7b76; -fx-font-weight: bold; -fx-pref-width: 100;"/>
+            </HBox>
+            
+            <!-- Table Content -->
+            <VBox fx:id="recentInterventionsList" spacing="2">
+                <!-- Sample Row 1 -->
+                <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-padding: 12 0; -fx-background-color: #faf7f6; -fx-background-radius: 6;">
+                    <VBox spacing="2" style="-fx-pref-width: 180;">
+                        <Label text="#29402" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                        <Label text="Aéroports de Paris" style="-fx-font-size: 10; -fx-text-fill: #7d6d68;"/>
+                    </VBox>
+                    <Label text="Maintenance Serveur SQL 2022" style="-fx-font-size: 11; -fx-text-fill: #2d2d2d;" HBox.hgrow="ALWAYS"/>
+                    <Label text="Critique" style="-fx-font-size: 11; -fx-text-fill: #c8102e; -fx-font-weight: bold; -fx-pref-width: 100;"/>
+                    <Label text="Marc Leblanc" style="-fx-font-size: 11; -fx-text-fill: #2d2d2d; -fx-pref-width: 140;"/>
+                    <Label text="Expiré (-2h)" style="-fx-font-size: 11; -fx-text-fill: #c8102e; -fx-font-weight: bold; -fx-pref-width: 120;"/>
+                    <Label text="En cours" style="-fx-font-size: 11; -fx-text-fill: #f39c12; -fx-font-weight: bold; -fx-pref-width: 100;"/>
+                </HBox>
+                
+                <!-- Sample Row 2 -->
+                <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-padding: 12 0;">
+                    <VBox spacing="2" style="-fx-pref-width: 180;">
+                        <Label text="#29405" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                        <Label text="Thalès Group" style="-fx-font-size: 10; -fx-text-fill: #7d6d68;"/>
+                    </VBox>
+                    <Label text="Audit sécurité réseau Zone B" style="-fx-font-size: 11; -fx-text-fill: #2d2d2d;" HBox.hgrow="ALWAYS"/>
+                    <Label text="Assignée" style="-fx-font-size: 11; -fx-text-fill: #8a7b76; -fx-pref-width: 100;"/>
+                    <Label text="Sarah Meyer" style="-fx-font-size: 11; -fx-text-fill: #2d2d2d; -fx-pref-width: 140;"/>
+                    <Label text="6h restantes" style="-fx-font-size: 11; -fx-text-fill: #27ae60; -fx-pref-width: 120;"/>
+                    <Label text="Assignée" style="-fx-font-size: 11; -fx-text-fill: #3b5b93; -fx-font-weight: bold; -fx-pref-width: 100;"/>
+                </HBox>
+                
+                <!-- Sample Row 3 -->
+                <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-padding: 12 0; -fx-background-color: #faf7f6; -fx-background-radius: 6;">
+                    <VBox spacing="2" style="-fx-pref-width: 180;">
+                        <Label text="#29410" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                        <Label text="Boulangerie Paul" style="-fx-font-size: 10; -fx-text-fill: #7d6d68;"/>
+                    </VBox>
+                    <Label text="Dysfonctionnement TPE Terminal 1" style="-fx-font-size: 11; -fx-text-fill: #2d2d2d;" HBox.hgrow="ALWAYS"/>
+                    <Label text="Nouvelle" style="-fx-font-size: 11; -fx-text-fill: #8a7b76; -fx-pref-width: 100;"/>
+                    <Label text="Non assigné" style="-fx-font-size: 11; -fx-text-fill: #7d6d68; -fx-pref-width: 140;"/>
+                    <Label text="18h restantes" style="-fx-font-size: 11; -fx-text-fill: #27ae60; -fx-pref-width: 120;"/>
+                    <Label text="Nouvelle" style="-fx-font-size: 11; -fx-text-fill: #2a7cff; -fx-font-weight: bold; -fx-pref-width: 100;"/>
+                </HBox>
             </VBox>
-            <ListView fx:id="recentActivityList" prefHeight="280" style="-fx-padding: 12;"/>
-        </VBox>
-
-        <!-- PRIORITY ALERTS SECTION -->
-        <VBox spacing="12" style="-fx-background-color: white; -fx-border-color: #e8e8e8; -fx-border-radius: 6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);">
-            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-            <VBox spacing="4">
-                <Label text="ALERTES PRIORITAIRES" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
-                <Label text="Interventions nécessitant une attention particulière" style="-fx-font-size: 11; -fx-text-fill: #999999;"/>
-            </VBox>
-            <ListView fx:id="priorityAlertsList" prefHeight="240" style="-fx-padding: 12;"/>
         </VBox>
     </VBox>
 </ScrollPane>

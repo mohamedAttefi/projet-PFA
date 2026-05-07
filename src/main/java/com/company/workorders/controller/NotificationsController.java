@@ -4,11 +4,11 @@ import com.company.workorders.dao.NotificationDAO;
 import com.company.workorders.service.SessionContext;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ListView;
+import javafx.scene.layout.VBox;
 
 public class NotificationsController {
 
-    @FXML private ListView<String> notificationList;
+    @FXML private VBox notificationList;
 
     @FXML
     public void initialize() {
@@ -24,12 +24,15 @@ public class NotificationsController {
         }
     }
 
+    @FXML
+    private void handleSettings() {
+        showInfo("Paramètres", "Paramètres de notification - Fonctionnalité à implémenter");
+    }
+
     private void reloadNotifications() {
-        long userId = SessionContext.getCurrentUser() != null ? SessionContext.getCurrentUser().getId() : 0;
-        notificationList.getItems().setAll(NotificationDAO.getNotificationsForUser(userId));
-        if (notificationList.getItems().isEmpty()) {
-            notificationList.getItems().add("Aucune notification pour le moment.");
-        }
+        // The notifications are now static in the FXML
+        // This method can be used to dynamically load notifications in the future
+        // For now, the FXML contains the sample notification cards
     }
 
     private void showInfo(String title, String message) {

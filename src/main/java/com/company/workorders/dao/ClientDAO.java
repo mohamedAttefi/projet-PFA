@@ -196,6 +196,8 @@ public class ClientDAO {
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setLong(1, clientId);
+
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     rows.add("#" + rs.getLong("id") + " - " + rs.getString("title") + " | " +

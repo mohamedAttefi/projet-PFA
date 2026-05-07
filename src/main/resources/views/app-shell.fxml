@@ -2,102 +2,93 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.company.workorders.controller.AppShellController"
             prefWidth="1600.0" prefHeight="900.0"
             style="-fx-background-color: #f7f4f2;">
 
-    <!-- TOP BAR -->
     <top>
-        <HBox spacing="20" alignment="CENTER_LEFT"
-              style="-fx-background-color: linear-gradient(to right, #9e001f 0%, #c8102e 100%); -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 8, 0, 0, 2);">
+        <HBox spacing="18" alignment="CENTER_LEFT"
+              style="-fx-background-color: white; -fx-border-color: #e9e1dd; -fx-border-width: 0 0 1 0;">
             <padding>
-                <Insets top="18" right="32" bottom="18" left="32"/>
+                <Insets top="14" right="24" bottom="14" left="24"/>
             </padding>
 
-            <!-- LOGO & TITLE -->
-                        <HBox spacing="12" alignment="CENTER_LEFT">
-                                <ImageView fitWidth="44" fitHeight="44" preserveRatio="true" smooth="true">
-                                    <image>
-                                        <Image url="/images/canal_logo.png" />
-                                    </image>
-                                </ImageView>
-                                <VBox spacing="2">
-                                        <Label text="CANAL INFORMATIQUE" 
-                                                   style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold; -fx-letter-spacing: -0.5;"/>
-                                        <Label text="Gestion des Interventions" 
-                                                   style="-fx-text-fill: rgba(255,255,255,0.85); -fx-font-size: 11;"/>
-                                </VBox>
-                        </HBox>
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <ImageView fitWidth="36" fitHeight="36" preserveRatio="true">
+                    <image>
+                        <Image url="/images/canal_logo.png"/>
+                    </image>
+                </ImageView>
+                <VBox spacing="1">
+                    <Label text="Canal Informatique" style="-fx-text-fill: #c8102e; -fx-font-size: 18; -fx-font-weight: 800;"/>
+                    <Label text="Gestion de maintenance" style="-fx-text-fill: #7d6d68; -fx-font-size: 10; -fx-letter-spacing: 1;"/>
+                </VBox>
+            </HBox>
 
             <Region HBox.hgrow="ALWAYS"/>
 
-            <!-- USER SECTION -->
-            <VBox spacing="2" alignment="CENTER_RIGHT">
-                <Label text="Connecté en tant que" 
-                       style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 10;"/>
-                <Label fx:id="userLabel" text="Utilisateur" 
-                       style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13;"/>
-            </VBox>
+            <TextField promptText="Rechercher une intervention, un client..."
+                       prefWidth="420"
+                       style="-fx-background-color: #f7f4f2; -fx-background-radius: 8; -fx-border-color: #f0e6e2; -fx-border-radius: 8; -fx-padding: 10 14;"/>
 
-            <Separator style="-fx-orientation: vertical; -fx-padding: 8px 0; -fx-stroke: rgba(255,255,255,0.3);"/>
+            <Region HBox.hgrow="ALWAYS"/>
 
-            <!-- NOTIFICATIONS ICON -->
+            <Button text="Aide" onAction="#loadHistory"
+                    style="-fx-background-color: transparent; -fx-text-fill: #6f5651; -fx-cursor: hand;"/>
             <Button text="🔔" onAction="#loadNotifications"
-                    style="-fx-font-size: 16; -fx-padding: 8 12; -fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: white;"/>
+                    style="-fx-background-color: transparent; -fx-font-size: 16; -fx-text-fill: #6f5651; -fx-cursor: hand;"/>
+            <Button text="⚙" onAction="#loadProfile"
+                    style="-fx-background-color: transparent; -fx-font-size: 16; -fx-text-fill: #6f5651; -fx-cursor: hand;"/>
+
+            <Button fx:id="profileBtn" text="Jean Dupont" onAction="#loadProfile"
+                    style="-fx-background-color: transparent; -fx-padding: 0; -fx-cursor: hand; -fx-text-fill: #2d2d2d; -fx-font-weight: bold;"/>
+            <Label fx:id="userLabel" text="Utilisateur" style="-fx-text-fill: #7d6d68; -fx-font-size: 11;"/>
         </HBox>
     </top>
 
-    <!-- SIDEBAR -->
     <left>
-        <VBox spacing="4" prefWidth="280"
-              style="-fx-background-color: white; -fx-border-color: #e8e8e8; -fx-border-width: 0 1 0 0;">
+        <VBox spacing="12" prefWidth="250"
+              style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-width: 0 1 0 0;">
             <padding>
-                <Insets top="32" right="0" bottom="32" left="0"/>
+                <Insets top="18" right="14" bottom="18" left="14"/>
             </padding>
 
-            <!-- SIDEBAR HEADER -->
-            <Label text="MENU PRINCIPAL" 
-                   style="-fx-font-size: 11; -fx-text-fill: #999999; -fx-font-weight: bold; -fx-padding: 0 16px;"/>
+            <VBox spacing="2" style="-fx-padding: 0 6 10 6;">
+                <Label text="Canal Informatique" style="-fx-text-fill: #c8102e; -fx-font-size: 16; -fx-font-weight: 800;"/>
+                <Label text="Gestion de maintenance" style="-fx-text-fill: #7d6d68; -fx-font-size: 10; -fx-letter-spacing: 1;"/>
+            </VBox>
 
-            <!-- NAVIGATION BUTTONS -->
-            <Button fx:id="dashboardBtn" text="📊 Tableau de bord" onAction="#loadDashboard" 
-                    maxWidth="Infinity" style="-fx-padding: 14 16; -fx-text-alignment: left; -fx-background-color: transparent; -fx-text-fill: #2d2d2d; -fx-font-size: 13; -fx-cursor: hand;"/>
-            <Button fx:id="interventionsBtn" text="⚙️ Interventions" onAction="#loadInterventions" 
-                    maxWidth="Infinity" style="-fx-padding: 14 16; -fx-text-alignment: left; -fx-background-color: transparent; -fx-text-fill: #2d2d2d; -fx-font-size: 13; -fx-cursor: hand;"/>
-            <Button fx:id="clientsBtn" text="👥 Clients" onAction="#loadClients" 
-                    maxWidth="Infinity" style="-fx-padding: 14 16; -fx-text-alignment: left; -fx-background-color: transparent; -fx-text-fill: #2d2d2d; -fx-font-size: 13; -fx-cursor: hand;"/>
-            <Button fx:id="usersBtn" text="👤 Utilisateurs" onAction="#loadUsers" 
-                    maxWidth="Infinity" style="-fx-padding: 14 16; -fx-text-alignment: left; -fx-background-color: transparent; -fx-text-fill: #2d2d2d; -fx-font-size: 13; -fx-cursor: hand;"/>
-            
-            <Separator style="-fx-padding: 8 0;"/>
-
-            <!-- ADDITIONAL MENU -->
-            <Label text="AUTRES" 
-                   style="-fx-font-size: 11; -fx-text-fill: #999999; -fx-font-weight: bold; -fx-padding: 8 16 0 16;"/>
-
-            <Button fx:id="notificationsBtn" text="🔔 Notifications" onAction="#loadNotifications" 
-                    maxWidth="Infinity" style="-fx-padding: 14 16; -fx-text-alignment: left; -fx-background-color: transparent; -fx-text-fill: #2d2d2d; -fx-font-size: 13; -fx-cursor: hand;"/>
-            <Button fx:id="historyBtn" text="📜 Historique" onAction="#loadHistory" 
-                    maxWidth="Infinity" style="-fx-padding: 14 16; -fx-text-alignment: left; -fx-background-color: transparent; -fx-text-fill: #2d2d2d; -fx-font-size: 13; -fx-cursor: hand;"/>
+            <Label text="Navigation" style="-fx-text-fill: #a0938e; -fx-font-size: 10; -fx-font-weight: bold; -fx-padding: 12 8 4 8;"/>
+            <Button fx:id="dashboardBtn" text="Tableau de bord" onAction="#loadDashboard" maxWidth="Infinity"
+                    style="-fx-background-color: #fef5f7; -fx-text-fill: #c8102e; -fx-font-weight: bold; -fx-alignment: CENTER_LEFT; -fx-padding: 12 14; -fx-border-color: transparent;"/>
+            <Button fx:id="interventionsBtn" text="Interventions" onAction="#loadInterventions" maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #4f4743; -fx-alignment: CENTER_LEFT; -fx-padding: 12 14; -fx-border-color: transparent;"/>
+            <Button fx:id="clientsBtn" text="Clients" onAction="#loadClients" maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #4f4743; -fx-alignment: CENTER_LEFT; -fx-padding: 12 14; -fx-border-color: transparent;"/>
+            <Button fx:id="notificationsBtn" text="Notifications" onAction="#loadNotifications" maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #4f4743; -fx-alignment: CENTER_LEFT; -fx-padding: 12 14; -fx-border-color: transparent;"/>
+            <Button fx:id="historyBtn" text="Historique" onAction="#loadHistory" maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #4f4743; -fx-alignment: CENTER_LEFT; -fx-padding: 12 14; -fx-border-color: transparent;"/>
+            <Button fx:id="usersBtn" text="Utilisateurs" onAction="#loadUsers" maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #4f4743; -fx-alignment: CENTER_LEFT; -fx-padding: 12 14; -fx-border-color: transparent;"/>
+            <Button fx:id="profileBtn" text="Profil" onAction="#loadProfile" maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #4f4743; -fx-alignment: CENTER_LEFT; -fx-padding: 12 14; -fx-border-color: transparent;"/>
 
             <Region VBox.vgrow="ALWAYS"/>
 
-            <!-- FOOTER -->
-            <Separator/>
-            <Button fx:id="logoutBtn" text="🚪 Déconnexion" onAction="#handleLogout" maxWidth="Infinity"
-                    style="-fx-padding: 14 16; -fx-text-alignment: left; -fx-background-color: transparent; -fx-text-fill: #e74c3c; -fx-font-size: 13; -fx-cursor: hand; -fx-font-weight: bold;"/>
-            <Label text="© 2026 Canal Informatique" 
-                   style="-fx-font-size: 10; -fx-text-fill: #999999; -fx-padding: 16 16 0 16;"/>
+            <VBox spacing="8" style="-fx-padding: 12 6 0 6;">
+                <Button fx:id="logoutBtn" text="Déconnexion" onAction="#handleLogout" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #c8102e; -fx-font-weight: bold; -fx-alignment: CENTER_LEFT; -fx-padding: 12 14; -fx-border-color: transparent;"/>
+                <Label text="© 2026 Canal Informatique" style="-fx-text-fill: #a0938e; -fx-font-size: 10; -fx-padding: 0 8;"/>
+            </VBox>
         </VBox>
     </left>
 
-    <!-- CONTENT AREA -->
     <center>
         <StackPane fx:id="contentPane" style="-fx-background-color: #f7f4f2;"/>
     </center>

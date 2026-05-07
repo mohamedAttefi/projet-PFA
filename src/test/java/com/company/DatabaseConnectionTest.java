@@ -25,7 +25,6 @@ public class DatabaseConnectionTest {
             Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
             System.out.println("✓ Database connection established successfully");
             
-            // Test connection validity
             if (connection.isValid(5)) {
                 System.out.println("✓ Connection is valid");
             } else {

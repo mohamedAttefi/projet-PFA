@@ -27,7 +27,7 @@ public class Main extends Application {
         AppNavigator.initialize(stage);
 
         applyWindowIcon(stage);
-        Scene scene = new Scene(AppNavigator.loadLoginView(), 1200, 800);
+        Scene scene = new Scene(AppNavigator.loadLoginView());
         stage.setTitle("Canal Informatique - Gestion des Interventions");
         stage.setScene(scene);
         stage.show();

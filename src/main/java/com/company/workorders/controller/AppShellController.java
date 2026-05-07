@@ -33,6 +33,9 @@ public class AppShellController {
     private Button usersBtn;
 
     @FXML
+    private Button profileBtn;
+
+    @FXML
     private Button notificationsBtn;
 
     @FXML
@@ -81,6 +84,11 @@ public class AppShellController {
         if (usersBtn != null) {
             usersBtn.setVisible(canSeeUsers);
             usersBtn.setManaged(canSeeUsers);
+        }
+
+        if (profileBtn != null) {
+            profileBtn.setVisible(true);
+            profileBtn.setManaged(true);
         }
 
         // Notifications: All roles
@@ -133,6 +141,11 @@ public class AppShellController {
     @FXML
     private void loadNotifications() {
         loadView("/views/notifications-view.fxml");
+    }
+
+    @FXML
+    private void loadProfile() {
+        loadView("/views/profile-view.fxml");
     }
 
     @FXML
