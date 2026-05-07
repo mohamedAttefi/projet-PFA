@@ -17,7 +17,7 @@ public class ClientDAO {
      */
     public static List<Client> getAllClients() {
         List<Client> clients = new ArrayList<>();
-        String query = "SELECT id, company_name, phone, address FROM clients ORDER BY company_name";
+        String query = "SELECT id, company_name, phone, address, COALESCE(email, '') AS email FROM clients ORDER BY company_name";
 
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
@@ -29,7 +29,7 @@ public class ClientDAO {
                         rs.getString("company_name"),
                         rs.getString("phone"),
                         rs.getString("address"),
-                        "" // email is not in the clients table schema
+                    rs.getString("email")
                 );
                 clients.add(client);
             }
@@ -44,7 +44,7 @@ public class ClientDAO {
      * Get client by ID
      */
     public static Client getClientById(long clientId) {
-        String query = "SELECT id, company_name, phone, address FROM clients WHERE id = ?";
+        String query = "SELECT id, company_name, phone, address, COALESCE(email, '') AS email FROM clients WHERE id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -58,7 +58,7 @@ public class ClientDAO {
                             rs.getString("company_name"),
                             rs.getString("phone"),
                             rs.getString("address"),
-                            ""
+                            rs.getString("email")
                     );
                 }
             }
@@ -73,8 +73,8 @@ public class ClientDAO {
      * Create a new client
      */
     public static long createClient(String companyName, String phone, String address, String email) {
-        String query = "INSERT INTO clients (company_name, phone, address, created_at, updated_at) " +
-                       "VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+        String query = "INSERT INTO clients (company_name, phone, address, email) " +
+                       "VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -82,6 +82,7 @@ public class ClientDAO {
             stmt.setString(1, companyName);
             stmt.setString(2, phone);
             stmt.setString(3, address);
+            stmt.setString(4, email);
 
             int affectedRows = stmt.executeUpdate();
 
@@ -104,8 +105,8 @@ public class ClientDAO {
     /**
      * Update an existing client
      */
-    public static boolean updateClient(long clientId, String companyName, String phone, String address) {
-        String query = "UPDATE clients SET company_name = ?, phone = ?, address = ?, updated_at = CURRENT_TIMESTAMP " +
+    public static boolean updateClient(long clientId, String companyName, String phone, String address, String email) {
+        String query = "UPDATE clients SET company_name = ?, phone = ?, address = ?, email = ?" +
                        "WHERE id = ?";
 
         try (Connection conn = DBConnection.getConnection();
@@ -114,7 +115,8 @@ public class ClientDAO {
             stmt.setString(1, companyName);
             stmt.setString(2, phone);
             stmt.setString(3, address);
-            stmt.setLong(4, clientId);
+            stmt.setString(4, email);
+            stmt.setLong(5, clientId);
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
@@ -156,8 +158,8 @@ public class ClientDAO {
      */
     public static List<Client> searchClients(String searchTerm) {
         List<Client> clients = new ArrayList<>();
-        String query = "SELECT id, company_name, phone, address FROM clients " +
-                       "WHERE LOWER(company_name) LIKE LOWER(?) OR LOWER(phone) LIKE LOWER(?) " +
+        String query = "SELECT id, company_name, phone, address, COALESCE(email, '') AS email FROM clients " +
+                       "WHERE LOWER(company_name) LIKE LOWER(?) OR LOWER(phone) LIKE LOWER(?) OR LOWER(COALESCE(email, '')) LIKE LOWER(?) " +
                        "ORDER BY company_name";
 
         try (Connection conn = DBConnection.getConnection();
@@ -166,6 +168,7 @@ public class ClientDAO {
             String searchPattern = "%" + searchTerm + "%";
             stmt.setString(1, searchPattern);
             stmt.setString(2, searchPattern);
+            stmt.setString(3, searchPattern);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -174,7 +177,7 @@ public class ClientDAO {
                             rs.getString("company_name"),
                             rs.getString("phone"),
                             rs.getString("address"),
-                            ""
+                            rs.getString("email")
                     );
                     clients.add(client);
                 }
@@ -184,5 +187,25 @@ public class ClientDAO {
         }
 
         return clients;
+    }
+
+    public static List<String> getInterventionHistoryForClient(long clientId) {
+        List<String> rows = new ArrayList<>();
+        String query = "SELECT id, title, status, priority " +
+                "FROM interventions WHERE client_id = ? ORDER BY id DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    rows.add("#" + rs.getLong("id") + " - " + rs.getString("title") + " | " +
+                            rs.getString("status") + " | Priorité: " + rs.getString("priority"));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[ClientDAO] Error loading intervention history for client: " + e.getMessage());
+        }
+
+        return rows;
     }
 }
