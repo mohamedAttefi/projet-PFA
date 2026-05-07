@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.shape.Circle?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.company.workorders.controller.InterventionDetailController"
+            style="-fx-background-color: #f7f4f2; -fx-padding: 0;">
+
+    <VBox spacing="0" style="-fx-background-color: #f7f4f2;">
+
+        <!-- HEADER SECTION -->
+        <HBox spacing="16" alignment="CENTER_LEFT"
+              style="-fx-background-color: white; -fx-border-color: #e8e8e8; -fx-border-width: 0 0 1 0;">
+            <padding>
+                <Insets top="20" right="32" bottom="20" left="32"/>
+            </padding>
+
+            <!-- BACK BUTTON & TITLE -->
+            <VBox spacing="8">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Button text="← Retour" onAction="#handleBack"
+                            style="-fx-background-color: transparent; -fx-text-fill: #9e001f; -fx-cursor: hand; -fx-font-size: 12; -fx-font-weight: bold; -fx-padding: 0;"/>
+                    <Label fx:id="interventionRefLabel" text="INT-2024-0892"
+                           style="-fx-text-fill: #999; -fx-font-size: 12;"/>
+                </HBox>
+                <Label fx:id="interventionTitleLabel" text="Panne Serveur Critique - Agence Paris XI"
+                       style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                <Label fx:id="interventionDateLabel" text="Créé le 24 Mai 2024 • Entvenue - Aujourd'hui, 10:00"
+                       style="-fx-text-fill: #999; -fx-font-size: 11;"/>
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- ACTION BUTTONS -->
+            <HBox spacing="12">
+                <Button text="Imprimer" onAction="#handlePrint"
+                        style="-fx-padding: 8 16; -fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 4; -fx-text-fill: #2d2d2d; -fx-cursor: hand;"/>
+                <Button fx:id="closeBtn" text="Clôturer" onAction="#handleClose"
+                        style="-fx-padding: 8 16; -fx-background-color: #c8102e; -fx-text-fill: white; -fx-border-radius: 4; -fx-cursor: hand; -fx-font-weight: bold;"/>
+            </HBox>
+        </HBox>
+
+        <!-- PRIORITY BADGE -->
+        <HBox spacing="0" style="-fx-background-color: white; -fx-padding: 0 32 0 32;">
+            <Label fx:id="priorityLabel" text="⚠️ En cours"
+                   style="-fx-background-color: #fff3cd; -fx-text-fill: #856404; -fx-padding: 6 12; -fx-border-radius: 4; -fx-font-size: 12;"/>
+        </HBox>
+
+        <!-- STATUS TIMELINE -->
+        <HBox spacing="0" alignment="CENTER" style="-fx-background-color: white; -fx-padding: 32; -fx-border-color: #e8e8e8; -fx-border-width: 0 0 1 0;">
+            <padding>
+                <Insets top="0" right="32" bottom="0" left="32"/>
+            </padding>
+
+            <!-- Status 1: Nouvelle -->
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS" spacing="8">
+                <Circle radius="16" style="-fx-fill: #4CAF50;"/>
+                <Label text="Nouvelle" style="-fx-font-size: 12; -fx-text-fill: #2d2d2d; -fx-font-weight: bold;"/>
+                <Label text="24 Mai, 08:12" style="-fx-font-size: 10; -fx-text-fill: #999;"/>
+            </VBox>
+
+            <!-- Connector Line -->
+            <Region prefWidth="40" prefHeight="2" style="-fx-background-color: #FFA500;"/>
+
+            <!-- Status 2: Assignée -->
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS" spacing="8">
+                <Circle radius="16" style="-fx-fill: #2196F3;"/>
+                <Label text="Assignée" style="-fx-font-size: 12; -fx-text-fill: #2d2d2d; -fx-font-weight: bold;"/>
+                <Label text="24 Mai, 10:48" style="-fx-font-size: 10; -fx-text-fill: #999;"/>
+            </VBox>
+
+            <!-- Connector Line -->
+            <Region prefWidth="40" prefHeight="2" style="-fx-background-color: #FFA500;"/>
+
+            <!-- Status 3: En cours -->
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS" spacing="8">
+                <Circle radius="16" style="-fx-fill: #FFA500;"/>
+                <Label text="En cours" style="-fx-font-size: 12; -fx-text-fill: #2d2d2d; -fx-font-weight: bold;"/>
+                <Label text="En ce moment" style="-fx-font-size: 10; -fx-text-fill: #999;"/>
+            </VBox>
+
+            <!-- Connector Line (grayed) -->
+            <Region prefWidth="40" prefHeight="2" style="-fx-background-color: #ddd;"/>
+
+            <!-- Status 4: Terminée -->
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS" spacing="8">
+                <Circle radius="16" style="-fx-fill: #ddd;"/>
+                <Label text="Terminée" style="-fx-font-size: 12; -fx-text-fill: #999;"/>
+                <Label text="Non planifiée" style="-fx-font-size: 10; -fx-text-fill: #ccc;"/>
+            </VBox>
+        </HBox>
+
+        <!-- MAIN CONTENT -->
+        <HBox spacing="24" style="-fx-background-color: #f7f4f2;">
+            <padding>
+                <Insets top="24" right="32" bottom="32" left="32"/>
+            </padding>
+
+            <!-- LEFT PANEL -->
+            <VBox spacing="24" HBox.hgrow="ALWAYS">
+
+                <!-- COMPLETE INFORMATION -->
+                <VBox spacing="16" style="-fx-background-color: white; -fx-padding: 20; -fx-border-radius: 4; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);">
+                    <Label text="Informations complètes" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+
+                    <!-- CLIENT INFO -->
+                    <VBox spacing="8">
+                        <Label text="CLIENT" style="-fx-font-size: 10; -fx-text-fill: #999; -fx-font-weight: bold;"/>
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <Label text="BN" style="-fx-background-color: #9e001f; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-weight: bold; -fx-border-radius: 4;"/>
+                            <VBox spacing="4">
+                                <Label fx:id="clientNameLabel" text="Banque Nationale - Agence Paris"
+                                       style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                                <Label fx:id="clientCodeLabel" text="SIRET: 483 601 504 00012"
+                                       style="-fx-font-size: 10; -fx-text-fill: #999;"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <Separator style="-fx-padding: 0;"/>
+
+                    <!-- INTERVENTION LOCATION -->
+                    <VBox spacing="8">
+                        <Label text="LIEU D'INTERVENTION" style="-fx-font-size: 10; -fx-text-fill: #999; -fx-font-weight: bold;"/>
+                        <HBox spacing="8">
+                            <Label text="📍" style="-fx-font-size: 14;"/>
+                            <VBox spacing="4">
+                                <Label fx:id="locationLabel" text="12 Rue de la République"
+                                       style="-fx-font-size: 12; -fx-text-fill: #2d2d2d; -fx-font-weight: bold;"/>
+                                <Label text="75011 Paris, France (Métro: Bastille)" style="-fx-font-size: 10; -fx-text-fill: #999;"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- PROBLEM DESCRIPTION -->
+                <VBox spacing="12" style="-fx-background-color: white; -fx-padding: 20; -fx-border-radius: 4; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);">
+                    <Label text="DESCRIPTION DU PROBLÈME" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                    <TextArea fx:id="descriptionArea" wrapText="true" style="-fx-control-inner-background: #f9f9f9; -fx-font-size: 11;"
+                              prefRowCount="6"/>
+                </VBox>
+
+                <!-- CHANGE HISTORY -->
+                <VBox spacing="12" style="-fx-background-color: white; -fx-padding: 20; -fx-border-radius: 4; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);">
+                    <HBox spacing="0" alignment="CENTER_LEFT">
+                        <Label text="Historique des changements" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Hyperlink text="Voir tout" style="-fx-font-size: 11; -fx-text-fill: #9e001f;"/>
+                    </HBox>
+
+                    <!-- History items -->
+                    <VBox fx:id="historyContainer" spacing="12"/>
+                </VBox>
+            </VBox>
+
+            <!-- RIGHT PANEL -->
+            <VBox spacing="20" prefWidth="280">
+
+                <!-- ASSIGNED TECHNICIAN -->
+                <VBox spacing="12" style="-fx-background-color: white; -fx-padding: 20; -fx-border-radius: 4; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);">
+                    <Label text="Technicien assigné" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+
+                    <VBox spacing="12" alignment="CENTER">
+                        <!-- Technician Avatar -->
+                        <Circle radius="40" style="-fx-fill: #e3f2fd;"/>
+
+                        <VBox spacing="4" alignment="CENTER">
+                            <Label fx:id="technicianNameLabel" text="Jean-Luc Moreau"
+                                   style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                            <Label text="Expert Réseaux &amp; Serveurs" style="-fx-font-size: 10; -fx-text-fill: #999;"/>
+                        </VBox>
+
+                        <HBox spacing="12" alignment="CENTER">
+                            <Button text="📞" onAction="#handleCallTechnician" style="-fx-font-size: 16; -fx-padding: 8; -fx-background-color: transparent; -fx-cursor: hand;"/>
+                            <Button text="💬" onAction="#handleMessageTechnician" style="-fx-font-size: 16; -fx-padding: 8; -fx-background-color: transparent; -fx-cursor: hand;"/>
+                            <Button text="✉️" onAction="#handleEmailTechnician" style="-fx-font-size: 16; -fx-padding: 8; -fx-background-color: transparent; -fx-cursor: hand;"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- QUICK ACTIONS -->
+                <VBox spacing="8" style="-fx-background-color: white; -fx-padding: 20; -fx-border-radius: 4; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);">
+                    <Label text="ACTIONS RAPIDES" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+
+                    <Button text="📊 Modifier statut" onAction="#handleModifyStatus" maxWidth="Infinity"
+                            style="-fx-padding: 10 12; -fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 4; -fx-text-fill: #2d2d2d; -fx-cursor: hand; -fx-text-alignment: left;"/>
+                    <Button text="👥 Réassigner" onAction="#handleReassign" maxWidth="Infinity"
+                            style="-fx-padding: 10 12; -fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 4; -fx-text-fill: #2d2d2d; -fx-cursor: hand; -fx-text-alignment: left;"/>
+                    <Button text="✏️ Modifier l'intervention" onAction="#handleModify" maxWidth="Infinity"
+                            style="-fx-padding: 10 12; -fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 4; -fx-text-fill: #2d2d2d; -fx-cursor: hand; -fx-text-alignment: left;"/>
+                    <Button text="❌ Annuler l'intervention" onAction="#handleCancel" maxWidth="Infinity"
+                            style="-fx-padding: 10 12; -fx-background-color: white; -fx-border-color: #e74c3c; -fx-border-radius: 4; -fx-text-fill: #e74c3c; -fx-cursor: hand; -fx-text-alignment: left;"/>
+                </VBox>
+
+                <!-- MAP VIEW -->
+                <VBox spacing="8" style="-fx-background-color: white; -fx-padding: 20; -fx-border-radius: 4; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0, 0, 1);">
+                    <Label text="Vue cartographique" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
+                    <Button text="Voir sur Google Maps" onAction="#handleShowMap" maxWidth="Infinity"
+                            style="-fx-padding: 10; -fx-background-color: #f0f0f0; -fx-border-radius: 4; -fx-text-fill: #2d2d2d; -fx-cursor: hand;"/>
+                    <Label text="Saint-Joliis (Google Maps)" style="-fx-font-size: 9; -fx-text-fill: #999;"/>
+                </VBox>
+            </VBox>
+        </HBox>
+    </VBox>
+</ScrollPane>
