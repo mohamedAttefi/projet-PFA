@@ -1,0 +1,31 @@
+WorkOrders Management System v1.0 - Quick Download Instructions
+
+📦 File: workorders-management-system-v1.0.zip (11.5 MB)
+
+🚀 HOW TO INSTALL:
+1. Download and extract the ZIP file
+2. Install Java 17+ (https://java.com)
+3. Run start.bat (Windows) or start.sh (Linux/Mac)
+4. Follow setup instructions in README.md
+
+✨ FEATURES:
+- Real-time dashboard with live statistics
+- Smart notifications system  
+- Dynamic intervention tracking
+- Complete user management
+- Automatic database updates
+
+⚙️ REQUIREMENTS:
+- Java 17 or higher
+- PostgreSQL database (optional)
+- Windows/Linux/Mac OS
+
+📞 SUPPORT:
+- Check README.md for detailed instructions
+- Ensure Java is properly installed
+- Verify database connection if needed
+
+Download Link: [PASTE YOUR UPLOAD LINK HERE]
+
+---
+Version 1.0 | Released 2026-05-11 | Canal Informatique
