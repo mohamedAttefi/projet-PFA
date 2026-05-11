@@ -17,6 +17,7 @@ echo Set oLink = oWS.CreateShortcut(sLinkFile) >> "%TEMP%\shortcut.vbs"
 echo oLink.TargetPath = "%~dp0distribution\start.bat" >> "%TEMP%\shortcut.vbs"
 echo oLink.WorkingDirectory = "%~dp0distribution" >> "%TEMP%\shortcut.vbs"
 echo oLink.Description = "Canal Informatique - Gestion des Interventions" >> "%TEMP%\shortcut.vbs"
+echo oLink.IconLocation = "%~dp0distribution\workorders-icon.png" >> "%TEMP%\shortcut.vbs"
 echo oLink.Save >> "%TEMP%\shortcut.vbs"
 
 REM Execute VBS script
