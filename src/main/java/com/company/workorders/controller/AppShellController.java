@@ -60,7 +60,6 @@ public class AppShellController {
     }
 
     private void updateMenuVisibility(UserRole role) {
-        // Dashboard: All roles
         if (dashboardBtn != null) {
             dashboardBtn.setVisible(true);
             dashboardBtn.setManaged(true);
