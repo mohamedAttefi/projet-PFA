@@ -22,7 +22,45 @@ public class DashboardController {
         // Start notification service for urgent interventions
         NotificationService.startNotificationService();
         
+        // Create sample notifications for testing (only if no notifications exist)
+        createSampleNotificationsIfNeeded();
+        
         refreshDashboard();
+    }
+    
+    /**
+     * Create sample notifications if the database is empty
+     */
+    private void createSampleNotificationsIfNeeded() {
+        try {
+            // Check if notifications table exists and has data
+            java.sql.Connection conn = com.company.workorders.util.DBConnection.getConnection();
+            java.sql.Statement stmt = conn.createStatement();
+            
+            // Check if table exists
+            java.sql.ResultSet rs = stmt.executeQuery(
+                "SELECT COUNT(*) as count FROM information_schema.tables WHERE table_name = 'notifications'");
+            
+            if (rs.next() && rs.getInt("count") > 0) {
+                // Check if table has data
+                rs.close();
+                rs = stmt.executeQuery("SELECT COUNT(*) as count FROM notifications");
+                
+                if (rs.next() && rs.getInt("count") == 0) {
+                    // Table exists but is empty, create sample data
+                    com.company.workorders.util.NotificationTestData.createSampleNotifications();
+                }
+            }
+            
+            rs.close();
+            stmt.close();
+            conn.close();
+            
+        } catch (Exception e) {
+            System.err.println("[DashboardController] Error checking notifications: " + e.getMessage());
+            // If there's an error, create sample data anyway
+            com.company.workorders.util.NotificationTestData.createSampleNotifications();
+        }
     }
 
     private void refreshDashboard() {
