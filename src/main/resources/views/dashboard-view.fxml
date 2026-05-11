@@ -31,25 +31,25 @@
             <VBox spacing="8" HBox.hgrow="ALWAYS"
                   style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 18;">
                 <Label text="PERFORMANCE MOYENNE" style="-fx-font-size: 10; -fx-text-fill: #8a7b76; -fx-letter-spacing: 1;"/>
-                <Label fx:id="performanceLabel" text="92.4%" style="-fx-font-size: 30; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                <Label fx:id="performanceLabel" style="-fx-font-size: 30; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
                 <Label text="+4.2%" style="-fx-font-size: 11; -fx-text-fill: #27ae60;"/>
             </VBox>
             <VBox spacing="8" HBox.hgrow="ALWAYS"
                   style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 18;">
                 <Label text="INTERVENTIONS CRITIQUES" style="-fx-font-size: 10; -fx-text-fill: #8a7b76; -fx-letter-spacing: 1;"/>
-                <Label fx:id="critiquesLabel" text="08" style="-fx-font-size: 30; -fx-font-weight: 800; -fx-text-fill: #c8102e;"/>
+                <Label fx:id="critiquesLabel" style="-fx-font-size: 30; -fx-font-weight: 800; -fx-text-fill: #c8102e;"/>
                 <Label text="Attention" style="-fx-font-size: 11; -fx-text-fill: #f39c12;"/>
             </VBox>
             <VBox spacing="8" HBox.hgrow="ALWAYS"
                   style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 18;">
                 <Label text="CHARGE DE TRAVAIL / TECH" style="-fx-font-size: 10; -fx-text-fill: #8a7b76; -fx-letter-spacing: 1;"/>
-                <Label fx:id="chargeLabel" text="6.2" style="-fx-font-size: 30; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                <Label fx:id="chargeLabel" style="-fx-font-size: 30; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
                 <Label text="bons/j • 85% capacité" style="-fx-font-size: 11; -fx-text-fill: #7d6d68;"/>
             </VBox>
             <VBox spacing="8" HBox.hgrow="ALWAYS"
                   style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 18;">
                 <Label text="TAUX DE RÉSOLUTION (SLA)" style="-fx-font-size: 10; -fx-text-fill: #8a7b76; -fx-letter-spacing: 1;"/>
-                <Label fx:id="slaLabel" text="98.1%" style="-fx-font-size: 30; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                <Label fx:id="slaLabel" style="-fx-font-size: 30; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
                 <Label text="Ce mois" style="-fx-font-size: 11; -fx-text-fill: #7d6d68;"/>
             </VBox>
         </HBox>
@@ -90,7 +90,7 @@
                     <Region prefWidth="120" prefHeight="120" style="-fx-background-color: #f0e6e2; -fx-background-radius: 60;"/>
                     <VBox spacing="4" alignment="CENTER">
                         <Label text="Total" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
-                        <Label fx:id="totalInterventionsLabel" text="124" style="-fx-font-size: 24; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                        <Label fx:id="totalInterventionsLabel" style="-fx-font-size: 24; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
                     </VBox>
                     <VBox spacing="6" style="-fx-padding: 12 0 0 0;">
                         <HBox spacing="8" alignment="CENTER_LEFT">
