@@ -58,6 +58,8 @@
                     <Region HBox.hgrow="ALWAYS"/>
                     <Button text="Paramètres de notification" onAction="#handleSettings"
                             style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-text-fill: #2d2d2d;"/>
+                    <Button text="Test notification" onAction="#handleCreateTestNotification"
+                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;"/>
                     <Button text="Tout marquer comme lu" onAction="#handleMarkAllRead"
                             style="-fx-background-color: #c8102e; -fx-text-fill: white; -fx-font-weight: bold;"/>
                 </HBox>

@@ -45,28 +45,58 @@ public class NotificationsController {
     private void handleSettings() {
         showInfo("Paramètres", "Paramètres de notification - Fonctionnalité à implémenter");
     }
+    
+    @FXML
+    private void handleCreateTestNotification() {
+        try {
+            long userId = SessionContext.getCurrentUser() != null ? SessionContext.getCurrentUser().getId() : 0;
+            String testMessage = "Test notification créée à " + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
+            
+            boolean success = NotificationDAO.createNotification(userId, testMessage);
+            if (success) {
+                System.out.println("[NotificationsController] Test notification created successfully");
+                reloadNotifications();
+                updateStatistics();
+                showInfo("Test", "Notification de test créée avec succès!");
+            } else {
+                System.err.println("[NotificationsController] Failed to create test notification");
+            }
+        } catch (Exception e) {
+            System.err.println("[NotificationsController] Error creating test notification: " + e.getMessage());
+            showError("Erreur", "Impossible de créer la notification de test: " + e.getMessage());
+        }
+    }
 
     private void reloadNotifications() {
         if (notificationList == null) return;
         
         long userId = SessionContext.getCurrentUser() != null ? SessionContext.getCurrentUser().getId() : 0;
+        System.out.println("[NotificationsController] Loading notifications for user ID: " + userId);
         
         // Clear existing notifications
         notificationList.getChildren().clear();
         
         // Load real notifications from database
         List<String> notifications = NotificationDAO.getNotificationsForUser(userId);
+        System.out.println("[NotificationsController] Found " + notifications.size() + " notifications");
+        
+        // Debug: Print all notifications
+        for (int i = 0; i < notifications.size(); i++) {
+            System.out.println("[NotificationsController] Notification " + (i+1) + ": " + notifications.get(i));
+        }
         
         if (notifications.isEmpty()) {
             // Show empty state
             VBox emptyState = createEmptyStateCard();
             notificationList.getChildren().add(emptyState);
+            System.out.println("[NotificationsController] Showing empty state");
         } else {
             // Display real notifications
             for (String notification : notifications) {
                 VBox notificationCard = createNotificationCard(notification);
                 notificationList.getChildren().add(notificationCard);
             }
+            System.out.println("[NotificationsController] Displayed " + notifications.size() + " notification cards");
         }
         
         // Add load more button if there are many notifications
