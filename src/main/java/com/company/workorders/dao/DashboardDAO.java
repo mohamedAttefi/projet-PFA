@@ -118,6 +118,151 @@ public class DashboardDAO {
         return interventions;
     }
 
+    public static double calculateSLACompliance() {
+        String query = "SELECT " +
+                "CASE " +
+                "WHEN COUNT(*) = 0 THEN 100.0 " +
+                "ELSE (COUNT(CASE WHEN status IN ('Terminée', 'Fermée') AND " +
+                "EXTRACT(EPOCH FROM (updated_at - created_at)) <= 86400 THEN 1 END) * 100.0 / COUNT(*)) " +
+                "END as sla_rate " +
+                "FROM interventions WHERE created_at >= CURRENT_DATE - INTERVAL '30 days'";
+        
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                return rs.getDouble("sla_rate");
+            }
+        } catch (SQLException e) {
+            System.err.println("[DashboardDAO] SLA calculation error: " + e.getMessage());
+        }
+        return 0.0;
+    }
+    
+    public static double calculateAverageResolutionTime() {
+        String query = "SELECT AVG(EXTRACT(EPOCH FROM (updated_at - created_at)) / 3600) as avg_hours " +
+                "FROM interventions WHERE status IN ('Terminée', 'Fermée') AND updated_at IS NOT NULL";
+        
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next() && rs.getObject("avg_hours") != null) {
+                return rs.getDouble("avg_hours");
+            }
+        } catch (SQLException e) {
+            System.err.println("[DashboardDAO] Average resolution time error: " + e.getMessage());
+        }
+        return 0.0;
+    }
+    
+    public static int getActiveTechniciansCount() {
+        String query = "SELECT COUNT(DISTINCT assigned_to) as count " +
+                "FROM interventions WHERE assigned_to IS NOT NULL AND status IN ('Assignée', 'En cours')";
+        
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (SQLException e) {
+            System.err.println("[DashboardDAO] Active technicians count error: " + e.getMessage());
+        }
+        return 0;
+    }
+    
+    public static double calculateWorkloadScore() {
+        String query = "SELECT " +
+                "CASE " +
+                "WHEN tech_count = 0 THEN 0.0 " +
+                "ELSE (active_interventions * 1.0 / tech_count) " +
+                "END as workload " +
+                "FROM (SELECT COUNT(DISTINCT assigned_to) as tech_count, " +
+                "COUNT(*) as active_interventions " +
+                "FROM interventions WHERE assigned_to IS NOT NULL AND status = 'En cours') t";
+        
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                return rs.getDouble("workload");
+            }
+        } catch (SQLException e) {
+            System.err.println("[DashboardDAO] Workload calculation error: " + e.getMessage());
+        }
+        return 0.0;
+    }
+    
+    public static double calculatePerformanceScore() {
+        String query = "SELECT " +
+                "CASE " +
+                "WHEN total_count = 0 THEN 100.0 " +
+                "ELSE (completed_rate * 0.6 + sla_rate * 0.4) " +
+                "END as performance " +
+                "FROM (SELECT " +
+                "(COUNT(CASE WHEN status IN ('Terminée', 'Fermée') THEN 1 END) * 100.0 / COUNT(*)) as completed_rate, " +
+                "(COUNT(CASE WHEN status IN ('Terminée', 'Fermée') AND " +
+                "EXTRACT(EPOCH FROM (updated_at - created_at)) <= 86400 THEN 1 END) * 100.0 / " +
+                "CASE WHEN COUNT(*) = 0 THEN 1 ELSE COUNT(*) END) as sla_rate, " +
+                "COUNT(*) as total_count " +
+                "FROM interventions WHERE created_at >= CURRENT_DATE - INTERVAL '30 days') t";
+        
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                return rs.getDouble("performance");
+            }
+        } catch (SQLException e) {
+            System.err.println("[DashboardDAO] Performance score error: " + e.getMessage());
+        }
+        return 0.0;
+    }
+    
+    public static long countUnassignedInterventions() {
+        return singleCount("SELECT COUNT(*) FROM interventions WHERE assigned_to IS NULL AND status NOT IN ('Terminée', 'Fermée', 'Annulée')");
+    }
+    
+    public static long countOverdueInterventions() {
+        String query = "SELECT COUNT(*) FROM interventions " +
+                "WHERE status NOT IN ('Terminée', 'Fermée', 'Annulée') " +
+                "AND created_at < CURRENT_DATE - INTERVAL '3 days'";
+        return singleCount(query);
+    }
+    
+    public static List<Object[]> getTopTechnicians(int limit) {
+        List<Object[]> technicians = new ArrayList<>();
+        String query = "SELECT COALESCE(u.name, 'Non assigné') as name, " +
+                "COUNT(*) as total, " +
+                "COUNT(CASE WHEN i.status IN ('Terminée', 'Fermée') THEN 1 END) as completed, " +
+                "AVG(EXTRACT(EPOCH FROM (COALESCE(i.updated_at, CURRENT_TIMESTAMP) - i.created_at)) / 3600) as avg_hours " +
+                "FROM interventions i " +
+                "LEFT JOIN users u ON i.assigned_to = u.id " +
+                "WHERE i.assigned_to IS NOT NULL " +
+                "GROUP BY u.name " +
+                "ORDER BY total DESC " +
+                "LIMIT ?";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, limit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    technicians.add(new Object[]{
+                        rs.getString("name"),
+                        rs.getLong("total"),
+                        rs.getLong("completed"),
+                        rs.getDouble("avg_hours")
+                    });
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[DashboardDAO] Top technicians error: " + e.getMessage());
+        }
+        
+        return technicians;
+    }
+
     private static long singleCount(String sql) {
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
