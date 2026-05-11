@@ -161,6 +161,28 @@ public class InterventionDAO {
                     if (generatedKeys.next()) {
                         long id = generatedKeys.getLong(1);
                         System.out.println("[InterventionDAO] Intervention created with ID: " + id);
+                        
+                        // Create notification for new intervention
+                        try {
+                            // Get client name for notification
+                            String clientName = getClientName(clientId);
+                            
+                            // Create notification for all users about new intervention
+                            com.company.workorders.service.NotificationService.createSystemNotification(
+                                String.format("[NOUVEAU] Intervention créée: %s pour %s", title, clientName)
+                            );
+                            
+                            // If assigned to a technician, create specific notification
+                            if (assignedTo > 0) {
+                                com.company.workorders.service.NotificationService.createInterventionNotification(
+                                    assignedTo, title, clientName
+                                );
+                            }
+                            
+                        } catch (Exception notifError) {
+                            System.err.println("[InterventionDAO] Error creating notification: " + notifError.getMessage());
+                        }
+                        
                         return id;
                     }
                 }
@@ -171,12 +193,61 @@ public class InterventionDAO {
 
         return -1;
     }
+    
+    /**
+     * Get client name by ID
+     */
+    private static String getClientName(long clientId) {
+        String query = "SELECT company_name FROM clients WHERE id = ?";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setLong(1, clientId);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("company_name");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[InterventionDAO] Error getting client name: " + e.getMessage());
+        }
+        
+        return "Client inconnu";
+    }
+    
+    /**
+     * Get technician name by ID
+     */
+    private static String getTechnicianName(long technicianId) {
+        String query = "SELECT name FROM users WHERE id = ?";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setLong(1, technicianId);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("name");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[InterventionDAO] Error getting technician name: " + e.getMessage());
+        }
+        
+        return "Technicien inconnu";
+    }
 
     /**
      * Update an existing intervention
      */
     public static boolean updateIntervention(long interventionId, String title, String description,
                                             String priority, String status, String location, long assignedTo) {
+        // Get current intervention data before update for notification comparison
+        Intervention currentIntervention = getInterventionById(interventionId);
+        
         String query = "UPDATE interventions SET title = ?, description = ?, priority = ?, " +
                        "status = ?, location = ?, assigned_to = ?, updated_at = CURRENT_TIMESTAMP " +
                        "WHERE id = ?";
@@ -195,6 +266,55 @@ public class InterventionDAO {
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
                 System.out.println("[InterventionDAO] Intervention " + interventionId + " updated");
+                
+                // Create notifications for changes
+                try {
+                    // Status change notification
+                    if (currentIntervention != null && !currentIntervention.getStatus().equals(status)) {
+                        String clientName = getClientName(currentIntervention.getClientId());
+                        
+                        // System notification for status change
+                        com.company.workorders.service.NotificationService.createSystemNotification(
+                            String.format("[STATUT] %s: %s → %s", title, currentIntervention.getStatus(), status)
+                        );
+                        
+                        // Specific notification for assigned technician
+                        if (assignedTo > 0) {
+                            com.company.workorders.service.NotificationService.createStatusUpdateNotification(
+                                assignedTo, title, currentIntervention.getStatus(), status
+                            );
+                        }
+                        
+                        // Completion notification
+                        if (status.equals("Terminée") || status.equals("Fermée")) {
+                            String technicianName = getTechnicianName(assignedTo);
+                            com.company.workorders.service.NotificationService.createCompletionNotification(
+                                null, title, technicianName
+                            );
+                        }
+                    }
+                    
+                    // Assignment notification (new assignment)
+                    if (currentIntervention != null && currentIntervention.getAssignedTo() != assignedTo && assignedTo > 0) {
+                        String clientName = getClientName(currentIntervention.getClientId());
+                        
+                        // Check if this is an urgent assignment
+                        if (priority.equals("Critique") || priority.equals("Urgente")) {
+                            com.company.workorders.service.NotificationService.createUrgentAssignmentNotification(
+                                assignedTo, title, getTechnicianName(assignedTo)
+                            );
+                        }
+                        
+                        // General assignment notification
+                        com.company.workorders.service.NotificationService.createSystemNotification(
+                            String.format("[ASSIGNATION] %s assignée à %s", title, getTechnicianName(assignedTo))
+                        );
+                    }
+                    
+                } catch (Exception notifError) {
+                    System.err.println("[InterventionDAO] Error creating update notification: " + notifError.getMessage());
+                }
+                
                 return true;
             }
         } catch (SQLException e) {
