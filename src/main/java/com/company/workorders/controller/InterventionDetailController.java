@@ -13,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.GridPane;
+import javafx.scene.shape.Circle;
 import javafx.geometry.Insets;
 
 import java.awt.Desktop;
@@ -59,6 +60,8 @@ public class InterventionDetailController {
     private ComboBox<String> commentTypeComboBox;
     @FXML
     private Button closeBtn;
+    @FXML
+    private HBox statusTimelineContainer;
 
     private Intervention intervention;
     private long interventionId;
@@ -118,6 +121,9 @@ public class InterventionDetailController {
         // Load history
         loadChangeHistory();
 
+        // Generate dynamic status timeline
+        generateStatusTimeline();
+
         // Update close button state based on intervention status
         updateCloseButtonState();
     }
@@ -140,6 +146,134 @@ public class InterventionDetailController {
         }
 
         priorityLabel.setText(text);
+    }
+
+    /**
+     * Generate dynamic status timeline based on current intervention status
+     */
+    private void generateStatusTimeline() {
+        if (statusTimelineContainer == null || intervention == null) {
+            return;
+        }
+
+        statusTimelineContainer.getChildren().clear();
+
+        // Define all possible statuses in order
+        String[] statusOrder = {"Nouvelle", "Assignée", "En cours", "Terminée"};
+        String currentStatus = intervention.getStatus();
+
+        // Find current status index
+        int currentIndex = -1;
+        for (int i = 0; i < statusOrder.length; i++) {
+            if (statusOrder[i].equals(currentStatus)) {
+                currentIndex = i;
+                break;
+            }
+        }
+
+        // Create timeline nodes
+        for (int i = 0; i < statusOrder.length; i++) {
+            String status = statusOrder[i];
+            boolean isCompleted = i < currentIndex;
+            boolean isCurrent = i == currentIndex;
+            boolean isFuture = i > currentIndex;
+
+            // Create status node
+            VBox statusNode = createStatusTimelineNode(status, isCompleted, isCurrent, isFuture);
+            statusTimelineContainer.getChildren().add(statusNode);
+
+            // Add connector line (except for last status)
+            if (i < statusOrder.length - 1) {
+                Region connector = createTimelineConnector(isCompleted);
+                statusTimelineContainer.getChildren().add(connector);
+            }
+        }
+    }
+
+    /**
+     * Create a single status timeline node
+     */
+    private VBox createStatusTimelineNode(String status, boolean isCompleted, boolean isCurrent, boolean isFuture) {
+        VBox node = new VBox(8);
+        node.setAlignment(javafx.geometry.Pos.CENTER);
+        node.setStyle("-fx-padding: 0 10;");
+
+        // Status circle
+        Circle circle = new Circle(16);
+        if (isCompleted) {
+            circle.setStyle("-fx-fill: #4CAF50;"); // Green for completed
+        } else if (isCurrent) {
+            circle.setStyle("-fx-fill: #FFA500;"); // Orange for current
+        } else {
+            circle.setStyle("-fx-fill: #ddd;"); // Gray for future
+        }
+
+        // Status label
+        Label statusLabel = new Label(status);
+        statusLabel.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
+        if (isFuture) {
+            statusLabel.setTextFill(javafx.scene.paint.Color.web("#999"));
+        } else {
+            statusLabel.setTextFill(javafx.scene.paint.Color.web("#2d2d2d"));
+        }
+
+        // Time label
+        Label timeLabel = new Label();
+        timeLabel.setStyle("-fx-font-size: 10;");
+        
+        if (isCurrent) {
+            timeLabel.setText("En ce moment");
+            timeLabel.setTextFill(javafx.scene.paint.Color.web("#999"));
+        } else if (isCompleted) {
+            timeLabel.setText(getStatusTimestamp(status));
+            timeLabel.setTextFill(javafx.scene.paint.Color.web("#999"));
+        } else {
+            timeLabel.setText("Non planifiée");
+            timeLabel.setTextFill(javafx.scene.paint.Color.web("#ccc"));
+        }
+
+        node.getChildren().addAll(circle, statusLabel, timeLabel);
+        return node;
+    }
+
+    /**
+     * Create connector line between timeline nodes
+     */
+    private Region createTimelineConnector(boolean isCompleted) {
+        Region connector = new Region();
+        connector.setPrefWidth(40);
+        connector.setPrefHeight(2);
+        
+        if (isCompleted) {
+            connector.setStyle("-fx-background-color: #FFA500;"); // Orange for completed path
+        } else {
+            connector.setStyle("-fx-background-color: #ddd;"); // Gray for future path
+        }
+        
+        return connector;
+    }
+
+    /**
+     * Get timestamp for a specific status (simplified for demo)
+     */
+    private String getStatusTimestamp(String status) {
+        // In a real implementation, you would fetch actual timestamps from database
+        // For now, return a placeholder based on creation time
+        if (intervention != null && intervention.getCreatedAt() != null) {
+            try {
+                LocalDateTime created = LocalDateTime.parse(intervention.getCreatedAt().replace(" ", "T"));
+                if (status.equals("Nouvelle")) {
+                    return created.format(DateTimeFormatter.ofPattern("dd MMM, HH:mm"));
+                } else if (status.equals("Assignée")) {
+                    return created.plusHours(2).format(DateTimeFormatter.ofPattern("dd MMM, HH:mm"));
+                } else if (status.equals("En cours")) {
+                    return created.plusHours(4).format(DateTimeFormatter.ofPattern("dd MMM, HH:mm"));
+                }
+            } catch (Exception e) {
+                // Fallback if parsing fails
+            }
+        }
+        return "Date inconnue";
     }
 
     /**

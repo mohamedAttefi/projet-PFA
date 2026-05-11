@@ -56,43 +56,9 @@
             <padding>
                 <Insets top="0" right="32" bottom="0" left="32"/>
             </padding>
-
-            <!-- Status 1: Nouvelle -->
-            <VBox alignment="CENTER" HBox.hgrow="ALWAYS" spacing="8">
-                <Circle radius="16" style="-fx-fill: #4CAF50;"/>
-                <Label text="Nouvelle" style="-fx-font-size: 12; -fx-text-fill: #2d2d2d; -fx-font-weight: bold;"/>
-                <Label text="24 Mai, 08:12" style="-fx-font-size: 10; -fx-text-fill: #999;"/>
-            </VBox>
-
-            <!-- Connector Line -->
-            <Region prefWidth="40" prefHeight="2" style="-fx-background-color: #FFA500;"/>
-
-            <!-- Status 2: Assignée -->
-            <VBox alignment="CENTER" HBox.hgrow="ALWAYS" spacing="8">
-                <Circle radius="16" style="-fx-fill: #2196F3;"/>
-                <Label text="Assignée" style="-fx-font-size: 12; -fx-text-fill: #2d2d2d; -fx-font-weight: bold;"/>
-                <Label text="24 Mai, 10:48" style="-fx-font-size: 10; -fx-text-fill: #999;"/>
-            </VBox>
-
-            <!-- Connector Line -->
-            <Region prefWidth="40" prefHeight="2" style="-fx-background-color: #FFA500;"/>
-
-            <!-- Status 3: En cours -->
-            <VBox alignment="CENTER" HBox.hgrow="ALWAYS" spacing="8">
-                <Circle radius="16" style="-fx-fill: #FFA500;"/>
-                <Label text="En cours" style="-fx-font-size: 12; -fx-text-fill: #2d2d2d; -fx-font-weight: bold;"/>
-                <Label text="En ce moment" style="-fx-font-size: 10; -fx-text-fill: #999;"/>
-            </VBox>
-
-            <!-- Connector Line (grayed) -->
-            <Region prefWidth="40" prefHeight="2" style="-fx-background-color: #ddd;"/>
-
-            <!-- Status 4: Terminée -->
-            <VBox alignment="CENTER" HBox.hgrow="ALWAYS" spacing="8">
-                <Circle radius="16" style="-fx-fill: #ddd;"/>
-                <Label text="Terminée" style="-fx-font-size: 12; -fx-text-fill: #999;"/>
-                <Label text="Non planifiée" style="-fx-font-size: 10; -fx-text-fill: #ccc;"/>
-            </VBox>
+            <HBox fx:id="statusTimelineContainer" spacing="0" alignment="CENTER" HBox.hgrow="ALWAYS">
+                <!-- Status timeline will be dynamically generated here -->
+            </HBox>
         </HBox>
 
         <!-- MAIN CONTENT -->
