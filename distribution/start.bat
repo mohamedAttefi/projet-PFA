@@ -12,19 +12,38 @@ if %errorlevel% neq 0 (
 )
 
 REM Check if JAR file exists
-if not exist "workorders-1.0-SNAPSHOT-executable.jar" (
-    echo Error: workorders-1.0-SNAPSHOT-executable.jar not found
+if not exist "workorders-1.0-SNAPSHOT.jar" (
+    echo Error: workorders-1.0-SNAPSHOT.jar not found
     echo Please ensure you're running this script from the correct directory
     pause
     exit /b 1
 )
 
-REM Start the application
+REM Check if lib folder exists
+if not exist "lib" (
+    echo Error: lib folder not found
+    echo Please ensure you're running this script from the correct directory
+    pause
+    exit /b 1
+)
+
+REM Start the application using JavaFX modules
 echo Launching application...
-java -jar workorders-1.0-SNAPSHOT-executable.jar
+java --module-path "lib" --add-modules javafx.controls,javafx.fxml,javafx.graphics -cp "workorders-1.0-SNAPSHOT.jar;lib/*" com.company.Main
 
 if %errorlevel% neq 0 (
     echo.
     echo Application exited with error code %errorlevel%
-    pause
+    echo Trying alternative launch method...
+    java -cp "workorders-1.0-SNAPSHOT.jar;lib/*" com.company.Main
+    
+    if %errorlevel% neq 0 (
+        echo.
+        echo Both launch methods failed. Please check:
+        echo - Java 17+ is installed
+        echo - All JAR files are present
+        echo - Database is accessible
+        pause
+        exit /b 1
+    )
 )

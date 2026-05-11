@@ -63,10 +63,11 @@ The application includes automatic database migration:
 ## 📁 Distribution Package
 
 ### Included Files
-- `workorders-1.0-SNAPSHOT-executable.jar` - Main application (all dependencies included)
+- `workorders-1.0-SNAPSHOT.jar` - Main application JAR
+- `lib/` - Dependencies folder containing all required libraries
 - `start.bat` - Windows startup script
 - `start.sh` - Linux/Mac startup script
-- `README-DISTRIBUTION.md` - This documentation
+- `README.md` - This documentation
 
 ### Installation
 1. Extract the distribution package
