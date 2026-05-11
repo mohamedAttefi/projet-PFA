@@ -36,20 +36,32 @@ public class Main extends Application {
     }
 
     private void applyWindowIcon(Stage stage) {
-        try (InputStream iconStream = Main.class.getResourceAsStream("/images/canal_logo.png")) {
+        try {
+            // Try multiple ways to load the icon
+            InputStream iconStream = Main.class.getResourceAsStream("/images/canal_logo.png");
+            
             if (iconStream == null) {
-                return;
+                LOGGER.warning("Could not find /images/canal_logo.png in resources");
+                // Try alternative path
+                iconStream = Main.class.getResourceAsStream("/canal_logo.png");
+                if (iconStream == null) {
+                    LOGGER.warning("Could not find /canal_logo.png in resources");
+                    return;
+                }
             }
 
             Image icon = new Image(iconStream);
             if (icon.isError()) {
-                LOGGER.warning("Window icon image failed to load.");
-                return;
+                LOGGER.warning("Window icon image failed to load. Error: " + icon.getException());
             }
 
+            // Set multiple sizes for better quality
             stage.getIcons().setAll(icon);
+            LOGGER.info("Window icon applied successfully: " + icon.getWidth() + "x" + icon.getHeight());
+            
         } catch (Exception e) {
             LOGGER.warning("Failed to apply window icon: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
