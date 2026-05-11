@@ -52,15 +52,11 @@ public class NotificationsController {
             long userId = SessionContext.getCurrentUser() != null ? SessionContext.getCurrentUser().getId() : 0;
             String testMessage = "Test notification créée à " + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
             
-            boolean success = NotificationDAO.createNotification(userId, testMessage);
-            if (success) {
-                System.out.println("[NotificationsController] Test notification created successfully");
-                reloadNotifications();
-                updateStatistics();
-                showInfo("Test", "Notification de test créée avec succès!");
-            } else {
-                System.err.println("[NotificationsController] Failed to create test notification");
-            }
+            NotificationDAO.createNotification(userId, testMessage);
+            System.out.println("[NotificationsController] Test notification created successfully");
+            reloadNotifications();
+            updateStatistics();
+            showInfo("Test", "Notification de test créée avec succès!");
         } catch (Exception e) {
             System.err.println("[NotificationsController] Error creating test notification: " + e.getMessage());
             showError("Erreur", "Impossible de créer la notification de test: " + e.getMessage());
@@ -277,6 +273,14 @@ public class NotificationsController {
 
     private void showInfo(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
