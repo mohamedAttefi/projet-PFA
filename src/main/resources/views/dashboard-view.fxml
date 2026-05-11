@@ -136,44 +136,7 @@
             
             <!-- Table Content -->
             <VBox fx:id="recentInterventionsList" spacing="2">
-                <!-- Sample Row 1 -->
-                <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-padding: 12 0; -fx-background-color: #faf7f6; -fx-background-radius: 6;">
-                    <VBox spacing="2" style="-fx-pref-width: 180;">
-                        <Label text="#29402" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
-                        <Label text="Aéroports de Paris" style="-fx-font-size: 10; -fx-text-fill: #7d6d68;"/>
-                    </VBox>
-                    <Label text="Maintenance Serveur SQL 2022" style="-fx-font-size: 11; -fx-text-fill: #2d2d2d;" HBox.hgrow="ALWAYS"/>
-                    <Label text="Critique" style="-fx-font-size: 11; -fx-text-fill: #c8102e; -fx-font-weight: bold; -fx-pref-width: 100;"/>
-                    <Label text="Marc Leblanc" style="-fx-font-size: 11; -fx-text-fill: #2d2d2d; -fx-pref-width: 140;"/>
-                    <Label text="Expiré (-2h)" style="-fx-font-size: 11; -fx-text-fill: #c8102e; -fx-font-weight: bold; -fx-pref-width: 120;"/>
-                    <Label text="En cours" style="-fx-font-size: 11; -fx-text-fill: #f39c12; -fx-font-weight: bold; -fx-pref-width: 100;"/>
-                </HBox>
-                
-                <!-- Sample Row 2 -->
-                <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-padding: 12 0;">
-                    <VBox spacing="2" style="-fx-pref-width: 180;">
-                        <Label text="#29405" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
-                        <Label text="Thalès Group" style="-fx-font-size: 10; -fx-text-fill: #7d6d68;"/>
-                    </VBox>
-                    <Label text="Audit sécurité réseau Zone B" style="-fx-font-size: 11; -fx-text-fill: #2d2d2d;" HBox.hgrow="ALWAYS"/>
-                    <Label text="Assignée" style="-fx-font-size: 11; -fx-text-fill: #8a7b76; -fx-pref-width: 100;"/>
-                    <Label text="Sarah Meyer" style="-fx-font-size: 11; -fx-text-fill: #2d2d2d; -fx-pref-width: 140;"/>
-                    <Label text="6h restantes" style="-fx-font-size: 11; -fx-text-fill: #27ae60; -fx-pref-width: 120;"/>
-                    <Label text="Assignée" style="-fx-font-size: 11; -fx-text-fill: #3b5b93; -fx-font-weight: bold; -fx-pref-width: 100;"/>
-                </HBox>
-                
-                <!-- Sample Row 3 -->
-                <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-padding: 12 0; -fx-background-color: #faf7f6; -fx-background-radius: 6;">
-                    <VBox spacing="2" style="-fx-pref-width: 180;">
-                        <Label text="#29410" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
-                        <Label text="Boulangerie Paul" style="-fx-font-size: 10; -fx-text-fill: #7d6d68;"/>
-                    </VBox>
-                    <Label text="Dysfonctionnement TPE Terminal 1" style="-fx-font-size: 11; -fx-text-fill: #2d2d2d;" HBox.hgrow="ALWAYS"/>
-                    <Label text="Nouvelle" style="-fx-font-size: 11; -fx-text-fill: #8a7b76; -fx-pref-width: 100;"/>
-                    <Label text="Non assigné" style="-fx-font-size: 11; -fx-text-fill: #7d6d68; -fx-pref-width: 140;"/>
-                    <Label text="18h restantes" style="-fx-font-size: 11; -fx-text-fill: #27ae60; -fx-pref-width: 120;"/>
-                    <Label text="Nouvelle" style="-fx-font-size: 11; -fx-text-fill: #2a7cff; -fx-font-weight: bold; -fx-pref-width: 100;"/>
-                </HBox>
+                <!-- Recent interventions will be dynamically loaded here -->
             </VBox>
         </VBox>
     </VBox>
