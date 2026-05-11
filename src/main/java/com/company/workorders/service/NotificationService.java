@@ -135,4 +135,43 @@ public class NotificationService {
             checkForUrgentInterventions();
         }
     }
+    
+    /**
+     * Create notification for new intervention
+     */
+    public static void createInterventionNotification(Long userId, String interventionTitle, String clientName) {
+        String message = String.format("Nouvelle intervention créée: %s pour %s", interventionTitle, clientName);
+        com.company.workorders.dao.NotificationDAO.createNotification(userId, message);
+    }
+    
+    /**
+     * Create notification for intervention status update
+     */
+    public static void createStatusUpdateNotification(Long userId, String interventionTitle, String oldStatus, String newStatus) {
+        String message = String.format("Mise à jour statut: %s - %s → %s", interventionTitle, oldStatus, newStatus);
+        com.company.workorders.dao.NotificationDAO.createNotification(userId, message);
+    }
+    
+    /**
+     * Create notification for urgent intervention assignment
+     */
+    public static void createUrgentAssignmentNotification(Long userId, String interventionTitle, String technicianName) {
+        String message = String.format("Intervention urgente assignée: %s à %s", interventionTitle, technicianName);
+        com.company.workorders.dao.NotificationDAO.createNotification(userId, message);
+    }
+    
+    /**
+     * Create notification for completed intervention
+     */
+    public static void createCompletionNotification(Long userId, String interventionTitle, String technicianName) {
+        String message = String.format("Intervention terminée: %s par %s", interventionTitle, technicianName);
+        com.company.workorders.dao.NotificationDAO.createNotification(userId, message);
+    }
+    
+    /**
+     * Create system notification for all users
+     */
+    public static void createSystemNotification(String message) {
+        com.company.workorders.dao.NotificationDAO.createNotification(null, message);
+    }
 }
