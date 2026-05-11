@@ -22,7 +22,6 @@ public class DashboardController {
         // Start notification service for urgent interventions
         NotificationService.startNotificationService();
         
-        // Create sample data for testing (only if database is empty)
         createSampleDataIfNeeded();
         
         refreshDashboard();
@@ -94,21 +93,35 @@ public class DashboardController {
             
             // Update total interventions count
             totalInterventionsLabel.setText(String.valueOf(totalInterventions));
+            System.out.println("[Dashboard] Updated totalInterventionsLabel: " + totalInterventions);
             
             // Update urgent interventions count
             critiquesLabel.setText(String.format("%02d", urgentInterventions));
+            System.out.println("[Dashboard] Updated critiquesLabel: " + urgentInterventions);
             
             // Calculate and update real workload score
             double workloadScore = DashboardDAO.calculateWorkloadScore();
             chargeLabel.setText(String.format("%.1f", workloadScore));
+            System.out.println("[Dashboard] Updated chargeLabel: " + workloadScore);
             
             // Calculate and update real SLA compliance
             double slaRate = DashboardDAO.calculateSLACompliance();
             slaLabel.setText(String.format("%.1f%%", slaRate));
+            System.out.println("[Dashboard] Updated slaLabel: " + slaRate + "%");
             
             // Calculate and update real performance score
             double performanceScore = DashboardDAO.calculatePerformanceScore();
             performanceLabel.setText(String.format("%.1f%%", performanceScore));
+            System.out.println("[Dashboard] Updated performanceLabel: " + performanceScore + "%");
+            
+            // Force UI refresh
+            javafx.application.Platform.runLater(() -> {
+                totalInterventionsLabel.requestLayout();
+                critiquesLabel.requestLayout();
+                chargeLabel.requestLayout();
+                slaLabel.requestLayout();
+                performanceLabel.requestLayout();
+            });
             
             // Load recent interventions into the VBox
             loadRecentInterventions();
