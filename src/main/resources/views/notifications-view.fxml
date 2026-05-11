@@ -31,14 +31,14 @@
                     <Label text="⚠" style="-fx-font-size: 18; -fx-text-fill: #c8102e;"/>
                     <VBox spacing="2">
                         <Label text="Urgences" style="-fx-text-fill: #7d6d68;"/>
-                        <Label text="03" style="-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                        <Label fx:id="urgentCountLabel" text="00" style="-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
                     </VBox>
                 </HBox>
                 <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: #eef4ff; -fx-background-radius: 10; -fx-padding: 12;">
                     <Label text="🗂" style="-fx-font-size: 18; -fx-text-fill: #3b5b93;"/>
                     <VBox spacing="2">
                         <Label text="En cours" style="-fx-text-fill: #7d6d68;"/>
-                        <Label text="12" style="-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
+                        <Label fx:id="inProgressCountLabel" text="00" style="-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #2d2d2d;"/>
                     </VBox>
                 </HBox>
                 <VBox spacing="8" style="-fx-background-color: #c8102e; -fx-background-radius: 12; -fx-padding: 18;">
@@ -63,68 +63,7 @@
                 </HBox>
                 
                 <VBox fx:id="notificationList" spacing="12">
-                    <!-- Urgent Alert Card -->
-                    <VBox spacing="12" style="-fx-background-color: white; -fx-border-color: #c8102e; -fx-border-width: 2 0 0 0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 16;">
-                        <HBox spacing="8" alignment="CENTER_LEFT">
-                            <Label text="ALERTE URGENTE" style="-fx-font-size: 10; -fx-text-fill: #c8102e; -fx-font-weight: bold;"/>
-                            <Label text="Il y a 5 min" style="-fx-font-size: 10; -fx-text-fill: #7d6d68;"/>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <Label text="🔴" style="-fx-font-size: 12;"/>
-                        </HBox>
-                        <Label text="Panne Critique - Client BNP Paribas" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
-                        <Label text="Serveur de base de données hors ligne au siège social. Une intervention immédiate est requise pour rétablir les services bancaires." 
-                               style="-fx-font-size: 12; -fx-text-fill: #7d6d68;" wrapText="true"/>
-                        <HBox spacing="8">
-                            <Button text="Assigner Technicien" style="-fx-background-color: #c8102e; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
-                            <Button text="Détails" style="-fx-background-color: white; -fx-border-color: #ebe2de; -fx-text-fill: #2d2d2d; -fx-cursor: hand;"/>
-                        </HBox>
-                    </VBox>
-                    
-                    <!-- Status Update Card -->
-                    <VBox spacing="12" style="-fx-background-color: white; -fx-border-color: #f39c12; -fx-border-width: 2 0 0 0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 16;">
-                        <HBox spacing="8" alignment="CENTER_LEFT">
-                            <Label text="MISE À JOUR STATUT" style="-fx-font-size: 10; -fx-text-fill: #f39c12; -fx-font-weight: bold;"/>
-                            <Label text="Il y a 45 min" style="-fx-font-size: 10; -fx-text-fill: #7d6d68;"/>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <Label text="🟡" style="-fx-font-size: 12;"/>
-                        </HBox>
-                        <Label text="Intervention en cours : Jean Dupont" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
-                        <Label text="Le technicien Jean Dupont vient de commencer la maintenance préventive sur le parc informatique de la Mairie de Lille." 
-                               style="-fx-font-size: 12; -fx-text-fill: #7d6d68;" wrapText="true"/>
-                    </VBox>
-                    
-                    <!-- New Work Order Card -->
-                    <VBox spacing="12" style="-fx-background-color: white; -fx-border-color: #27ae60; -fx-border-width: 2 0 0 0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 16;">
-                        <HBox spacing="8" alignment="CENTER_LEFT">
-                            <Label text="NOUVEAU BON" style="-fx-font-size: 10; -fx-text-fill: #27ae60; -fx-font-weight: bold;"/>
-                            <Label text="Il y a 2 heures" style="-fx-font-size: 10; -fx-text-fill: #7d6d68;"/>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <Label text="🟢" style="-fx-font-size: 12;"/>
-                        </HBox>
-                        <Label text="Nouvelle demande d'intervention" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
-                        <Label text="Un nouveau ticket a été ouvert par la société Logisimmo : Remplacement de 3 postes de travail suite à une surtension." 
-                               style="-fx-font-size: 12; -fx-text-fill: #7d6d68;" wrapText="true"/>
-                        <Button text="Voir le bon de travail →" style="-fx-background-color: transparent; -fx-text-fill: #27ae60; -fx-font-weight: bold; -fx-cursor: hand;"/>
-                    </VBox>
-                    
-                    <!-- Completed Card -->
-                    <VBox spacing="12" style="-fx-background-color: white; -fx-border-color: #8a7b76; -fx-border-width: 2 0 0 0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 16;">
-                        <HBox spacing="8" alignment="CENTER_LEFT">
-                            <Label text="TERMINÉE" style="-fx-font-size: 10; -fx-text-fill: #8a7b76; -fx-font-weight: bold;"/>
-                            <Label text="Hier" style="-fx-font-size: 10; -fx-text-fill: #7d6d68;"/>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <Label text="⚪" style="-fx-font-size: 12;"/>
-                        </HBox>
-                        <Label text="Maintenance effectuée : Cabinet Médical Artois" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d2d2d;"/>
-                        <Label text="L'intervention pour la mise à jour du logiciel de gestion de patientèle a été finalisée avec succès par Marc Lefebvre." 
-                               style="-fx-font-size: 12; -fx-text-fill: #7d6d68;" wrapText="true"/>
-                    </VBox>
-                    
-                    <!-- Load More Button -->
-                    <HBox alignment="CENTER">
-                        <Button text="Charger les notifications précédentes" 
-                                style="-fx-background-color: transparent; -fx-text-fill: #7d6d68; -fx-cursor: hand;"/>
-                    </HBox>
+                    <!-- Notifications will be dynamically loaded here -->
                 </VBox>
             </VBox>
         </HBox>
